@@ -8,10 +8,11 @@ var mineNums = []; //mine tile numbers
 var timer=null; //timer table tag in html
 
 var currentTargetTD; //cursor overed td in html
-var clickCount; //
+var clickCount=0; //
 
 function DrawMap(time, clickNumber){ 
     //baseReset
+    clickCount = 0; console.log('clickCount : '+clickCount);   
     tbody.html('');
     mineNums = [];
     width = parseInt($('#width').val());
@@ -55,7 +56,7 @@ function DrawMap(time, clickNumber){
             tiles[tileNum].td = document.createElement('td');            
             tiles[tileNum].td.id = 'td'+tileNum;               
             if (CheckMine(tileNum) == true) {//if tileNum in mineNums.  
-                tiles[tileNum].td.textContent = '★'; //for confirm    
+                //tiles[tileNum].td.textContent = '★'; //for confirm    
                 tiles[tileNum].td.classList.add('minetd');               
                 tiles[tileNum].onMine = true;
             }//On Mine
@@ -185,15 +186,16 @@ function CheckMine(num){
 function TileClick(tileNumber){  //If LeftClick      
     var num = parseInt(tileNumber);   
     if(isNaN(num)==false){ //Not a number filt out.
-        if(CheckMine(num)==true){//Mine touched.
+        if(CheckMine(num)==true){//Mine touched.    
+            console.log('clickCount : '+clickCount);       
             if(clickCount>0){
+                $('.minetd').html('●');
                 $('.minetd button').remove(); //by jquery.               
                 // for(i in mineNums){                    
                 //     $('#btn'+mineNums[i]).remove();
                 // }                
                 setTimeout(() => {
-                    alert('빵!');  
-                    clickCount = 0; 
+                    alert('빵!');                       
                     DrawMap();             
                 }, 100);     
             }//GameOver
@@ -207,11 +209,11 @@ function TileClick(tileNumber){  //If LeftClick
         }
         else{
             CheckSafeTile(num);     
-            $(this).remove();       
+            $(this).remove();     
+            clickCount++;
         }// CheckMine 결과에 따라 remove 순서가 다름.     
     }
     CheckEnding();
-    clickCount++;
 }//tile을 click함.
 
 function CheckSafeTile(num){
@@ -242,7 +244,6 @@ function CheckEnding(){
     if(currentCount == goalCount){
         var time = $('.timer').text();
         alert(time);
-        clickCount=0;
     }
     var time = $('.timer').text();
 }//removeTileCount를 참고하여 clear 시 ending popup.
