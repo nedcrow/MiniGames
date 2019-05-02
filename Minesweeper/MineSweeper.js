@@ -232,7 +232,8 @@ function CheckSafeTile(num){
             }
         }
         //console.log(btn);
-    }else{        
+    }else{     //nearbymine tile          
+        $('#td'+num).html(tiles[num].nearByMineCount);
         $('#btn'+num).remove();        
         //console.log('warnningTile');
     }
@@ -295,7 +296,7 @@ function SetNearByMineCount(neighberNum){
                 case 7: textColor='pink'; break;
                 case 8: textColor='white'; break;
             }             
-            tiles[neighberNum].td.textContent = mineCount.toString();
+            //tiles[neighberNum].td.textContent = mineCount.toString();           
             tiles[neighberNum].td.style.color = textColor;
             tiles[neighberNum].td.classList.add('nearbymine');
         }        
