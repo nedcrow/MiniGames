@@ -117,9 +117,8 @@ function DrawMap(time, clickNumber){
     });   
 
     $('td').mousedown(function(e) { 
-        if(e.which == 2){//If WheelClick  (1:left, 3:right)
-            //console.log(currentTargetTD);            
-            let id = parseInt(currentTargetTD.attr('data-num'));
+        if(e.which == 2){//If WheelClick  (1:left, 3:right)                
+            let id = parseInt(currentTargetTD.attr('id').split('td')[1]); console.log(id);      
             let neighborNums = Neighbor(id);
             neighborNums.push(id);
             let nearbymine = false;
@@ -132,15 +131,18 @@ function DrawMap(time, clickNumber){
                         nearbymine=true;
                     }
                 }else{
-                    if($('#btn'+neighborNums[i]).attr('id')!=undefined){//this btn is here.
-                        console.log($('#btn'+neighborNums[i]).attr('id'));
+                    if($('#btn'+neighborNums[i]).attr('id')!=undefined){//this btn is here.                        
                         btns.push( $('#btn'+neighborNums[i]));
                     }
                 }
             }
-            console.log(nearbymine);
             if(nearbymine == false){
                 for(i in btns){
+                    let num = parseInt(btns[i].attr('data-num'));
+                    if(tiles[num].nearByMineCount>0){
+                        $('#td'+num).html(tiles[num].nearByMineCount);
+                    }
+                    CheckSafeTile(num); 
                     btns[i].remove();
                 }
             }
@@ -217,17 +219,20 @@ function TileClick(tileNumber){  //If LeftClick
 }//tile을 click함.
 
 function CheckSafeTile(num){
+    console.log(num);
     var td = $('#td'+num).attr('class'); //console.log(td);   
     var nNums = Neighbor(num);
     
-    if(td == undefined || td == null){ //safe:no mine a nearby.
-       
+    if(td == undefined || td == null){ //safe:no mine a nearby. (noClass)       
         var confirmed = $('#btn'+num).attr('data-confirmed');        
         if(confirmed == 'false' ){    
-            var myConfirmed = $('#btn'+num).attr('data-confirmed','true');    
+            $('#btn'+num).attr('data-confirmed','true');    
             for(i in nNums){
                 CheckSafeTile(nNums[i]);
-                $('#btn'+num).attr('data-confirmed','true');
+                if(tiles[num].nearByMineCount>0){
+                    $('#td'+num).html(tiles[num].nearByMineCount);
+                }                
+                $('#btn'+num).attr('data-confirmed','true');                
                 $('#btn'+num).remove();                  
             }
         }
