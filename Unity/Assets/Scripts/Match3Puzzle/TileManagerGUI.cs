@@ -5,6 +5,8 @@ public class TileManagerGUI : EditorWindow
 {
     [Min(1)]
     public Vector2Int mapSizeValue = new Vector2Int(1, 1);
+    public float tileScaleUnit = 1.0f;
+    public float tileDistanceUnit = 1.0f;
 
     [MenuItem("Window/TileManagerGUI")]
     static void Init()
@@ -20,11 +22,16 @@ public class TileManagerGUI : EditorWindow
 
         mapSizeValue = EditorGUILayout.Vector2IntField("mapSizeValue", mapSizeValue);
 
+        tileScaleUnit = EditorGUILayout.FloatField("tileScaleUnit", tileScaleUnit);
+        tileDistanceUnit = EditorGUILayout.FloatField("tileDistanceUnit", tileDistanceUnit);
+
         // End the code block and update the label if a change occurred
         if (EditorGUI.EndChangeCheck())
         {
             TileCreator tileCreator = GameObject.Find("PuzzleManager").GetComponent<TileCreator>();
-            tileCreator.SetTilleMapSize(mapSizeValue.x, mapSizeValue.y);
+            tileCreator.tileScaleUnit = tileScaleUnit;
+            tileCreator.tileDistanceUnit = tileDistanceUnit;
+
             tileCreator.UpdateTileMap(mapSizeValue.x, mapSizeValue.y);
         }
     }

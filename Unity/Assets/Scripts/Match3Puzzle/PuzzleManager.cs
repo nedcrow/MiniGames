@@ -5,14 +5,18 @@ using UnityEngine;
 public class PuzzleManager : MonoBehaviour
 {
     // Start is called before the first frame update
-    public float tileMapUnit = 1;
+    public EGravity currentPuzzleGravity = EGravity.Down;
     public Material[] tileMaterials;
+
+
     void Start()
     {
         TileCreator tileCreator = GetComponent<TileCreator>();
-        GameObject.Find("MainCamera").transform.localPosition = new Vector3(
-            (tileCreator.GetTilleMapSize().x * 0.5f - 0.5f) * tileMapUnit,
-            (tileCreator.GetTilleMapSize().y * 0.5f - 0.5f) * tileMapUnit,
+        tileCreator.UpdateTileMap(tileCreator.tileMapSize.x, tileCreator.tileMapSize.y);
+
+        Camera.main.transform.localPosition = new Vector3(
+            (tileCreator.tileMapSize.x * 0.5f - 0.5f),
+            (tileCreator.tileMapSize.y * 0.5f - 0.5f),
             -1.0f
         );
     }

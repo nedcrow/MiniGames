@@ -8,13 +8,15 @@ public class RestedTilles
     private List<GameObject> restedTileList = new List<GameObject>();
     private List<GameObject> activatedTileList = new List<GameObject>();
     public int GetCount() { return restedTileList.Count() + activatedTileList.Count(); }
-    public void addNewTile()
+    public void AddNewTile()
     {
         GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Plane);
         tile.AddComponent<TileComponent>();
+        tile.tag = "Tile";
+        tile.transform.SetParent(GameObject.Find("PuzzleManager").transform);
         restedTileList.Add(tile);
         restedTileList[restedTileList.Count() - 1].SetActive(false);
-        tile.tag = "Tile";
+        
     }
 
     public GameObject ActiveTile()
@@ -47,31 +49,21 @@ public class RestedTilles
 public class TileCreator : MonoBehaviour
 {
     public List<List<GameObject>> tileList;
-    public GameObject currentTile;
-    public GameObject swapingTargetTile;
     public RestedTilles restedTilesObject = new RestedTilles();
+
+    [HideInInspector]
     public float tileScaleUnit = 1;
+    [HideInInspector]
+    public float tileDistanceUnit = 1;
 
-
+    [HideInInspector]
     [SerializeField]
-    private Vector2Int tileMapSize = Vector2Int.one;
-    private void Start()
-    {
-    }
-
-    public void SetTilleMapSize(int x, int y)
-    {
-        tileMapSize = new Vector2Int(x, y);
-    }
-
-    public Vector2Int GetTilleMapSize()
-    {
-        return tileMapSize;
-    }
+    public Vector2Int tileMapSize = Vector2Int.one;
 
     public void UpdateTileMap(int x, int y)
     {
-        SetTilleMapSize(x, y);
+        Debug.Log(x + ", " + y);
+        tileMapSize = new Vector2Int(x, y);
         if (tileList == null) tileList = new List<List<GameObject>>();
 
         // Clean trash tiles
@@ -85,7 +77,7 @@ public class TileCreator : MonoBehaviour
         int countOfLoop = Mathf.Clamp(tileMaxCount - restedTilesObject.GetCount(), 0, tileMaxCount);
         for (int i = 0; i < countOfLoop; i++)
         {
-            restedTilesObject.addNewTile();
+            restedTilesObject.AddNewTile();
         }
 
         // X¿­ »èÁ¦
@@ -151,24 +143,28 @@ public class TileCreator : MonoBehaviour
             foreach (var tile in tiles.value.Select((value, index) => new {value, index}))
             {
 
-                SpawnTile(tile.value, new Vector3(tiles.index, tile.index, 0f), new Vector3(-90f, 0f, 0f));
+                SpawnTile(tile.value, new Vector2Int(tiles.index, tile.index));
             }
         }
     }
 
-    private GameObject SpawnTile(GameObject tile, Vector3 location, Vector3 rotation)
+    private GameObject SpawnTile(GameObject tile, Vector2Int spawnPosition)
     {
         System.Array valuses = System.Enum.GetValues(typeof(ETileType));
 
         TileComponent tileCompnent = tile.GetComponent<TileComponent>();
-        if (tileCompnent) tileCompnent.currentType = (ETileType)valuses.GetValue(Random.Range(0, valuses.Length));
+        if (tileCompnent)
+        {
+            tileCompnent.currentType = (ETileType)valuses.GetValue(Random.Range(0, valuses.Length));
+            tileCompnent.currentPosition = new Vector3(spawnPosition.x, spawnPosition.y, 0f);
+        }
 
-        tile.transform.localPosition = location;
-        tile.transform.localRotation = Quaternion.Euler(rotation);
+        tile.transform.localPosition = new Vector3(spawnPosition.x, spawnPosition.y, .0f) * tileDistanceUnit;
+        tile.transform.localRotation = Quaternion.Euler(-90f, 0f, 0f);
         tile.transform.localScale = Vector3.one * tileScaleUnit;
         tile.name = "Tile_" + tileCompnent.currentType.ToString();
 
-        tile.gameObject.GetComponent<MeshRenderer>().material = this.gameObject.GetComponentInParent<PuzzleManager>().tileMaterials[((int)tileCompnent.currentType)];
+        tile.gameObject.GetComponent<MeshRenderer>().material = gameObject.GetComponentInParent<PuzzleManager>().tileMaterials[((int)tileCompnent.currentType)];
 
         return tile;
     }
