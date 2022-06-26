@@ -3,53 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class RestedTilles
-{
-    private List<GameObject> restedTileList = new List<GameObject>();
-    private List<GameObject> activatedTileList = new List<GameObject>();
-    public int GetCount() { return restedTileList.Count() + activatedTileList.Count(); }
-    public void AddNewTile()
-    {
-        GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        tile.AddComponent<TileComponent>();
-        tile.tag = "Tile";
-        tile.transform.SetParent(GameObject.Find("PuzzleManager").transform);
-        restedTileList.Add(tile);
-        restedTileList[restedTileList.Count() - 1].SetActive(false);
-        
-    }
-
-    public GameObject ActiveTile()
-    {
-        GameObject restedTile = restedTileList[restedTileList.Count - 1];
-        restedTile.SetActive(true);
-        activatedTileList.Add(restedTile);
-        restedTileList.RemoveAt(restedTileList.Count() - 1);
-        
-        return restedTile;
-    }
-
-    public void RestTile(GameObject tile)
-    {
-        if (tile == null) return;
-        restedTileList.Add(tile);
-        restedTileList[restedTileList.Count - 1].SetActive(false);
-        activatedTileList.RemoveAt(activatedTileList.IndexOf(tile));
-    }
-
-    public bool IsGotTile(GameObject tile)
-    {
-        bool isRestedTile = restedTileList.IndexOf(tile) >= 0 ? true : false;
-        bool isActivatedTile = activatedTileList.IndexOf(tile) >= 0 ? true : false;
-        return isRestedTile || isActivatedTile;
-    }
-}
-
-[ExecuteInEditMode]
-public class TileCreator : MonoBehaviour
+public class TileMapComponent : MonoBehaviour
 {
     public List<List<GameObject>> tileList;
-    public RestedTilles restedTilesObject = new RestedTilles();
+    public RestedTilles restedTilesObject = null;
 
     [HideInInspector]
     public float tileScaleUnit = 1;
@@ -65,6 +22,7 @@ public class TileCreator : MonoBehaviour
         Debug.Log(x + ", " + y);
         tileMapSize = new Vector2Int(x, y);
         if (tileList == null) tileList = new List<List<GameObject>>();
+        if (restedTilesObject == null) restedTilesObject = new RestedTilles();
 
         // Clean trash tiles
         foreach (GameObject tile in GameObject.FindGameObjectsWithTag("Tile"))
@@ -152,6 +110,7 @@ public class TileCreator : MonoBehaviour
     {
         System.Array valuses = System.Enum.GetValues(typeof(ETileType));
 
+        PuzzleManager puzzleManager = gameObject.GetComponentInParent<PuzzleManager>();
         TileComponent tileCompnent = tile.GetComponent<TileComponent>();
         if (tileCompnent)
         {
@@ -164,7 +123,15 @@ public class TileCreator : MonoBehaviour
         tile.transform.localScale = Vector3.one * tileScaleUnit;
         tile.name = "Tile_" + tileCompnent.currentType.ToString();
 
-        tile.gameObject.GetComponent<MeshRenderer>().material = gameObject.GetComponentInParent<PuzzleManager>().tileMaterials[((int)tileCompnent.currentType)];
+        if(puzzleManager.tileMaterials.Length < 1)
+        {
+            Debug.LogError("Empty material list of PuzzleManager");
+            return null;
+        }
+
+        tile.gameObject.GetComponent<MeshRenderer>().material = puzzleManager.tileMaterials[
+             Mathf.Clamp((int)tileCompnent.currentType, 0, puzzleManager.tileMaterials.Length)
+        ];
 
         return tile;
     }

@@ -28,11 +28,8 @@ public class TileManagerGUI : EditorWindow
         // End the code block and update the label if a change occurred
         if (EditorGUI.EndChangeCheck())
         {
-            TileCreator tileCreator = GameObject.Find("PuzzleManager").GetComponent<TileCreator>();
-            tileCreator.tileScaleUnit = tileScaleUnit;
-            tileCreator.tileDistanceUnit = tileDistanceUnit;
-
-            tileCreator.UpdateTileMap(mapSizeValue.x, mapSizeValue.y);
+            PuzzleManager puzzleManager = GameObject.Find("PuzzleManager").GetComponent<PuzzleManager>();
+            if(puzzleManager != null) puzzleManager.UpdateTileMapComponent(mapSizeValue, tileScaleUnit, tileDistanceUnit);
         }
     }
 }

@@ -225,6 +225,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -997,6 +998,39 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      0202_Body_22: 21300114
+      0202_Body_21: 21300112
+      0202_Body_26: 21300122
+      0202_Body_1: 21300072
+      0202_Body_14: 21300098
+      0202_Body_15: 21300100
+      0202_Body_20: 21300110
+      0202_Body_30: 21300130
+      0202_Body_23: 21300116
+      0202_Body_6: 21300082
+      0202_Body_28: 21300126
+      0202_Body_12: 21300094
+      0202_Body_27: 21300124
+      0202_Body_9: 21300088
+      0202_Body_25: 21300120
+      0202_Body_3: 21300076
+      0202_Body_13: 21300096
+      0202_Body_31: 21300132
+      0202_Body_0: 21300070
+      0202_Body_10: 21300090
+      0202_Body_4: 21300078
+      0202_Body_29: 21300128
+      0202_Body_5: 21300080
+      0202_Body_17: 21300104
+      0202_Body_19: 21300108
+      0202_Body_8: 21300086
+      0202_Body_18: 21300106
+      0202_Body_24: 21300118
+      0202_Body_7: 21300084
+      0202_Body_16: 21300102
+      0202_Body_11: 21300092
+      0202_Body_2: 21300074
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

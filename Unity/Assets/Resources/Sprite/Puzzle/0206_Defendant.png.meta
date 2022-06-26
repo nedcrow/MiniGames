@@ -87,6 +87,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -427,6 +428,19 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      0206_Defendant_5: 21300028
+      0206_Defendant_2: 21300022
+      0206_Defendant_6: 21300030
+      0206_Defendant_8: 21300034
+      0206_Defendant_3: 21300024
+      0206_Defendant_9: 21300036
+      0206_Defendant_10: 21300038
+      0206_Defendant_11: 21300040
+      0206_Defendant_0: 21300018
+      0206_Defendant_7: 21300032
+      0206_Defendant_4: 21300026
+      0206_Defendant_1: 21300020
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

@@ -132,6 +132,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -409,6 +410,16 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      0104_7: 21300068
+      0104_0: 21300054
+      0104_3: 21300060
+      0104_2: 21300058
+      0104_4: 21300062
+      0104_5: 21300064
+      0104_6: 21300066
+      0104_1: 21300056
+      0104_8: 21300070
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

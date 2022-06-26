@@ -96,6 +96,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -394,6 +395,17 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      0203_B_2: 21300032
+      0203_B_1: 21300030
+      0203_B_0: 21300028
+      0203_B_3: 21300034
+      0203_B_7: 21300042
+      0203_B_5: 21300038
+      0203_B_8: 21300044
+      0203_B_9: 21300046
+      0203_B_6: 21300040
+      0203_B_4: 21300036
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
