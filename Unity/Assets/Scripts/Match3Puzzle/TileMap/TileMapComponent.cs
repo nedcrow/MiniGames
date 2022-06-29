@@ -17,9 +17,11 @@ public class TileMapComponent : MonoBehaviour
     [SerializeField]
     public Vector2Int tileMapSize = Vector2Int.one;
 
+    public GameObject currentSelectedTile;
+    public GameObject swapingTargetTile;
+
     public void UpdateTileMap(int x, int y)
     {
-        Debug.Log(x + ", " + y);
         tileMapSize = new Vector2Int(x, y);
         if (tileList == null) tileList = new List<List<GameObject>>();
         if (restedTilesObject == null) restedTilesObject = new RestedTilles();
@@ -115,7 +117,7 @@ public class TileMapComponent : MonoBehaviour
         if (tileCompnent)
         {
             tileCompnent.currentType = (ETileType)valuses.GetValue(Random.Range(0, valuses.Length));
-            tileCompnent.currentPosition = new Vector3(spawnPosition.x, spawnPosition.y, 0f);
+            tileCompnent.currentTilePosition = new Vector3(spawnPosition.x, spawnPosition.y, 0f);
         }
 
         tile.transform.localPosition = new Vector3(spawnPosition.x, spawnPosition.y, .0f) * tileDistanceUnit;

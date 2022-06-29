@@ -5,8 +5,38 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class PuzzleManager : MonoBehaviour
 {
+    #region instance
+    private static PuzzleManager _instance;
+    //private static readonly object padlock = new object();
+    public static PuzzleManager instance
+    {
+        get
+        {
+            //lock (padlock)
+            {
+                if (_instance == null)
+                {
+                    GameObject obj = GameObject.Find("PuzzleManager");
+                    if (obj == null)
+                    {
+                        obj = new GameObject("PuzzleManager");
+                        obj.AddComponent<PuzzleManager>();
+                    }
+                    return obj.GetComponent<PuzzleManager>();
+                }
+                else
+                {
+                    return _instance;
+                }
+            }
+        }
+    }
+    #endregion
+
+
     // Start is called before the first frame update
     public EGravity currentPuzzleGravity = EGravity.Down;
+    public List<List<EGravity>> gravityMatrix = new List<List<EGravity>>();
     public Material[] tileMaterials;
     public TileMapComponent tileMapComponent = null;
     [SerializeField]

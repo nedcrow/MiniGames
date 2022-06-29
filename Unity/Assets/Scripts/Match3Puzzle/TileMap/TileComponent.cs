@@ -5,10 +5,13 @@ using UnityEngine;
 public class TileComponent : MonoBehaviour
 {
     public ETileType currentType = ETileType.Apple;
-    public Vector3 currentPosition;
+    public bool hasMovement = true;
+    public bool canExplosion = true;
+    public Vector3 currentTilePosition;
+    public int maxHP;
+    public int currentHP;
 
     private IEnumerator moveTo_co;
-
     public void MoveTo(Vector2Int targetTilePosion, float targetSpeed = 1.0f)
     {
         moveTo_co = MoveTo_Co(new Vector3(targetTilePosion.x, targetTilePosion.y, 0f));
@@ -25,7 +28,7 @@ public class TileComponent : MonoBehaviour
             float lerp = fps * targetSpeed * countOfStep;
             if (lerp > 1)
             {
-                gameObject.transform.position = currentPosition = targetPosition;
+                gameObject.transform.position = currentTilePosition = targetPosition;
                 break;
 
             }

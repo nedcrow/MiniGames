@@ -6,6 +6,14 @@ public enum ETileType
     Orange = 3,
 }
 
+public enum ECapsuleType
+{
+    Box = 0,
+    Bubble = 1,
+    Candle = 2,
+    Snow = 3,
+}
+
 /// <summary>
 /// normal gravity direction is down.
 /// </summary>
