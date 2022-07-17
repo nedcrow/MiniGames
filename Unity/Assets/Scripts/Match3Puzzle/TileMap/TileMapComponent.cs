@@ -6,6 +6,10 @@ using System.Linq;
 public class TileMapComponent : MonoBehaviour
 {
     public List<List<GameObject>> tileList;
+    public List<GameObject> demolishingTargetList;
+    public List<Vector3> SpawningPosList_SpecialTile1;
+    public List<Vector3> SpawningPosList_SpecialTile2;
+    public List<Vector3> SpawningPosList_SpecialTile3;
     public RestedTilles restedTilesObject = null;
 
     [HideInInspector]
@@ -103,20 +107,95 @@ public class TileMapComponent : MonoBehaviour
             foreach (var tile in tiles.value.Select((value, index) => new {value, index}))
             {
 
-                SpawnTile(tile.value, new Vector2Int(tiles.index, tile.index));
+                SpawnTile(tile.value, new Vector2Int(tiles.index, tile.index), PuzzleManager.instance.globalUsingTypes);
             }
         }
     }
 
-    private GameObject SpawnTile(GameObject tile, Vector2Int spawnPosition)
+    public void MatchTileList()
     {
-        System.Array valuses = System.Enum.GetValues(typeof(ETileType));
+        demolishingTargetList = new List<GameObject>();
+        
+        SortTileList();
+        int countOfSameless = 0;
+        // 선택 타일 가로(tileList[y-1]), 세로(tileList[0~n-1][x-1])
+        // 타겟 타일 가로(tileList[y-1]), 세로(tileList[0~n-1][x-1]) - x 위치 같으면 세로 제외, y 같으면 가로 제외
+        // 폭발 및 스페셜타일 생성위치(스와핑 및 폭발 있었던 타일 위치 근처로) 계산
+        EMatchType matchType = EMatchType.None;
+        if (IsMatchNormal())
+        {
+            if (isMatchStraight())
+            {
+                ChangeTileType(currentSelectedTile, ETileType.S1);
+            }
+            else if (isMatchFive())
+            {
+                ChangeTileType(currentSelectedTile, ETileType.S2);
+            }
+            else if (isMatchArrow_H())
+            {
+                ChangeTileType(currentSelectedTile, ETileType.S3);
+            }
+            else if (IsMatchArrow_V())
+            {
+                ChangeTileType(currentSelectedTile, ETileType.S4);
+            }
+            else if (isMatchBox())
+            {
+                ChangeTileType(currentSelectedTile, ETileType.S5);
+            }
+        }
+        else
+        {
+            if (isMatchBox())
+            {
+                ChangeTileType(currentSelectedTile, ETileType.S5);
+            }
+        }
+        if (isMatchStraight())
+        {
+            ChangeTileType(currentSelectedTile, ETileType.S6);
+        }
+    }
+    public void SortTileList()
+    {
+        // 리스트 전부 Merge
+        // 위치값으로 Sort
+        // 다시 분리
+    }
 
-        PuzzleManager puzzleManager = gameObject.GetComponentInParent<PuzzleManager>();
+    private bool IsMatchNormal() { 
+        // 한 줄에 3개 이상 시 return true;
+        return false; }
+    private bool IsMatchArrow_V() {
+        // 세로 줄에 4개 이상 시 return true;
+        return false; }
+    private bool isMatchArrow_H() {
+        // 가로 줄에 4개 이상 시 return true;
+        return false; }
+    private bool isMatchBox() {
+        // 세로 줄에 4개 이상 시 return true;
+        return false; }
+    private bool isMatchFive() { return false; }
+    private bool isMatchStraight() { return false; }
+
+    private void ChangeTileType(GameObject tile, ETileType tileType)
+    {
+        TileComponent tileCompnent = tile.GetComponent<TileComponent>();
+        tileCompnent.currentType = tileType;
+
+        tile.GetComponent<MeshRenderer>().material = PuzzleManager.instance.tileMaterials[
+             Mathf.Clamp((int)tileCompnent.currentType, 0, PuzzleManager.instance.tileMaterials.Length)
+        ];
+    }
+
+    // 맵 생성에 스포너 추가
+    private GameObject SpawnTile(GameObject tile, Vector2Int spawnPosition, ETileType[] usingTypes)
+    {
         TileComponent tileCompnent = tile.GetComponent<TileComponent>();
         if (tileCompnent)
         {
-            tileCompnent.currentType = (ETileType)valuses.GetValue(Random.Range(0, valuses.Length));
+            tileCompnent.currentType = (ETileType)usingTypes.GetValue(Random.Range(0, usingTypes.Length));
             tileCompnent.currentTilePosition = new Vector3(spawnPosition.x, spawnPosition.y, 0f);
         }
 
@@ -125,16 +204,19 @@ public class TileMapComponent : MonoBehaviour
         tile.transform.localScale = Vector3.one * tileScaleUnit;
         tile.name = "Tile_" + tileCompnent.currentType.ToString();
 
-        if(puzzleManager.tileMaterials.Length < 1)
+        if(PuzzleManager.instance.tileMaterials.Length < 1)
         {
             Debug.LogError("Empty material list of PuzzleManager");
             return null;
         }
 
-        tile.gameObject.GetComponent<MeshRenderer>().material = puzzleManager.tileMaterials[
-             Mathf.Clamp((int)tileCompnent.currentType, 0, puzzleManager.tileMaterials.Length)
+        // Material from type
+        tile.GetComponent<MeshRenderer>().material = PuzzleManager.instance.tileMaterials[
+             Mathf.Clamp((int)tileCompnent.currentType, 0, PuzzleManager.instance.tileMaterials.Length)
         ];
 
         return tile;
     }
+
+
 }

@@ -62,6 +62,7 @@ public class CursorComponent : MonoBehaviour
             );
 
         PuzzleManager.instance.GetComponent<TileMapComponent>().currentSelectedTile = currentTile.gameObject;
+        // 현재 게임 모드가 에디트 모드일 때와 플레이 모드일 때 구분
 
     }
 }
