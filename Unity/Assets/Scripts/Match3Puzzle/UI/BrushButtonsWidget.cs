@@ -26,6 +26,25 @@ public class BrushButtonsWidget : MonoBehaviour
         foreach (GameObject brushButton in brushButtonList) brushButton.SetActive(false);
     }
 
+    public bool DrawTile(TileComponent currentTileComponent)
+    {
+        if (selectedBrush == null) return false;
+        PuzzleManager.instance.UpdateCurrentSelectedTile(currentTileComponent);
+        //TileComponent targetTileComponent = currentTileComponent;
+        ETileType tileType = ETileType.None;
+        try {
+            tileType = (ETileType)System.Convert.ToInt32((selectedBrush.name.Split("_")[1]));
+        }
+        catch {
+            Debug.LogError("TileTypeError: " + selectedBrush.name);
+            return false;
+        }
+
+        currentTileComponent.ChangeTileType(tileType);
+
+        return true;
+    }
+
     void DrawBrushButtons()
     {
         List<ETileType> tileTypeList = new List<ETileType>(System.Enum.GetValues(typeof(ETileType)).OfType<ETileType>());
@@ -46,7 +65,9 @@ public class BrushButtonsWidget : MonoBehaviour
             brushButton.transform.SetParent(UIManager.instance.mainCanvas.transform);
 
             brushButton.AddComponent<Image>().sprite = spriteArr[0];
-            brushButton.AddComponent<Button>().onClick.AddListener(() => { selectedBrush = brushButton; });
+            brushButton.AddComponent<Button>().onClick.AddListener(() => {
+                selectedBrush = selectedBrush == brushButton ? null : brushButton;
+            });
 
             brushButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(10.0f, 10.0f + (type.index * brushSize.y * 0.5f));
             brushButton.GetComponent<RectTransform>().anchorMin = Vector2.zero;

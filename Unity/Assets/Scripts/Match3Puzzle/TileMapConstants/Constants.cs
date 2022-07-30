@@ -1,5 +1,6 @@
 public enum ETileType
 {
+    None = -1,
     Apple = 0,
     Banana = 1,
     Grape = 2,

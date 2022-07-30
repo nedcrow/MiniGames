@@ -6,12 +6,10 @@ public class UIManager : MonoBehaviour
 {
     #region instance
     private static UIManager _instance;
-    //private static readonly object padlock = new object();
     public static UIManager instance
     {
         get
         {
-            //lock (padlock)
             {
                 if (_instance == null)
                 {
@@ -58,10 +56,10 @@ public class UIManager : MonoBehaviour
         playModeButton.SetActive(true);
         brushButtonsWidget.ActiveBrushButtons();
 
-        if (tileMapComponent.tileList.Count() > 0)
-        {
-            tileMapComponent.tileList[0][0].GetComponent<TileComponent>().MoveTo(new Vector2Int(-1, -1));
-        }
+        //if (tileMapComponent.tileList.Count() > 0)
+        //{
+        //    tileMapComponent.tileList[0][0].GetComponent<TileComponent>().MoveTo(new Vector2Int(-1, -1));
+        //}
     }
 
     void OnClickedPlayButton()

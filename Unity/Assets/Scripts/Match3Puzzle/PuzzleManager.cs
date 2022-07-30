@@ -81,6 +81,18 @@ public class PuzzleManager : MonoBehaviour
         tileMapComponent.tileDistanceUnit = tileDistance_editor = tileDistance;
         tileMapComponent.UpdateTileMap(mapSizeValue.x, mapSizeValue.y);
     }
+
+    public bool UpdateCurrentSelectedTile(TileComponent currentTileComponent)
+    {
+        GameObject oldTileGameObj = tileMapComponent.currentSelectedTile;
+        bool isDifferent = oldTileGameObj != currentTileComponent.gameObject;
+        if (!isDifferent) return false;
+
+        GetComponent<TileMapComponent>().currentSelectedTile = currentTileComponent.gameObject;
+        // 현재 게임 모드가 에디트 모드일 때와 플레이 모드일 때 구분
+
+        return true;
+    }
     #endregion
 
 
