@@ -110,6 +110,7 @@ public class TileMapComponent : MonoBehaviour
                 SpawnTile(tile.value, new Vector2Int(tiles.index, tile.index), PuzzleManager.instance.globalUsingTypes);
             }
         }
+        SortTileList();
     }
 
     public void MatchTileList()
@@ -159,8 +160,12 @@ public class TileMapComponent : MonoBehaviour
     }
     public void SortTileList()
     {
-        // 리스트 전부 Merge
-        // 위치값으로 Sort
+        List<GameObject> mergedTileList = new List<GameObject>();
+        foreach(List<GameObject> tiles in tileList)
+        {
+            mergedTileList.AddRange(tiles);
+        }
+        mergedTileList.OrderBy(x => x.GetComponent<TileComponent>().currentTilePosition.x).ToList();
         // 다시 분리
     }
 
@@ -192,7 +197,7 @@ public class TileMapComponent : MonoBehaviour
         if (tileCompnent)
         {
             tileCompnent.currentType = (ETileType)usingTypes.GetValue(Random.Range(0, usingTypes.Length));
-            tileCompnent.currentTilePosition = new Vector3(spawnPosition.x, spawnPosition.y, 0f);
+            tileCompnent.currentTilePosition = spawnPosition;
         }
 
         tile.transform.localPosition = new Vector3(spawnPosition.x, spawnPosition.y, .0f) * tileDistanceUnit;

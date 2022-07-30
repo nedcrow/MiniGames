@@ -32,24 +32,37 @@ public class CursorComponent : MonoBehaviour
         RaycastHit Hit;
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         bool hitTile = Physics.Raycast(ray, out Hit) && Hit.collider.gameObject.CompareTag("Tile");
-        if (!hitTile)
-        {
-            transform.position = DefaultPosition;
-            return;
-        };
+        if (!hitTile) return;
 
         TileComponent tileComponent = Hit.collider.gameObject.GetComponent<TileComponent>();
+        bool pressedCtr = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
 
         if (Input.GetMouseButtonUp(0))
         {            
-            bool updatedCurrentTile = PuzzleManager.instance.UpdateCurrentSelectedTile(tileComponent);
-            if (updatedCurrentTile) transform.position = tileComponent.currentTilePosition;
+            if (pressedCtr)
+            {
+                bool drawnTiles = UIManager.instance.brushButtonsWidget.DrawTiles(tileComponent);
+                if (drawnTiles) transform.position = tileComponent.gameObject.transform.position;
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (!pressedCtr)
+            {
+                bool updatedCurrentTile = PuzzleManager.instance.UpdateCurrentSelectedTile(tileComponent);
+                if (updatedCurrentTile) transform.position = tileComponent.gameObject.transform.position;
+                if (!hitTile) transform.position = DefaultPosition;
+            }
         }
 
         if (Input.GetMouseButton(0))
         {
-            bool drawnTile = UIManager.instance.brushButtonsWidget.DrawTile(tileComponent);
-            if (drawnTile) transform.position = tileComponent.currentTilePosition;
+            if (!pressedCtr)
+            {
+                bool drawnTile = UIManager.instance.brushButtonsWidget.DrawTile(tileComponent);
+                if (drawnTile) transform.position = tileComponent.gameObject.transform.position;
+            }
         }
     }
 }

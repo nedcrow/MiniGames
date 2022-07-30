@@ -7,7 +7,7 @@ public class TileComponent : MonoBehaviour
     public ETileType currentType = ETileType.Apple;
     public bool hasMovement = true;
     public bool canExplosion = true;
-    public Vector3 currentTilePosition;
+    public Vector2Int currentTilePosition;
     public int maxHP;
     public int currentHP;
 
@@ -43,7 +43,7 @@ public class TileComponent : MonoBehaviour
             float lerp = fps * targetSpeed * countOfStep;
             if (lerp > 1)
             {
-                gameObject.transform.position = currentTilePosition = targetPosition;
+                gameObject.transform.position = targetPosition;
                 break;
 
             }
