@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class BrushButtonsWidget : MonoBehaviour
 {
     public List<GameObject> brushButtonList = new List<GameObject>();
+    public GameObject selectedBrush = null;
 
     public void ActiveBrushButtons()
     {
@@ -41,11 +42,11 @@ public class BrushButtonsWidget : MonoBehaviour
         foreach (var type in tileTypeList.Select((value, index) => (value, index)))
         {
             GameObject brushButton = new GameObject();
-            brushButton.name = "BrushButton" + type.index.ToString();
+            brushButton.name = "BrushButton_" + type.index.ToString();
             brushButton.transform.SetParent(UIManager.instance.mainCanvas.transform);
 
             brushButton.AddComponent<Image>().sprite = spriteArr[0];
-            brushButton.AddComponent<Button>().onClick.AddListener(() => { UIManager.instance.selecedBrush = brushButton; });
+            brushButton.AddComponent<Button>().onClick.AddListener(() => { selectedBrush = brushButton; });
 
             brushButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(10.0f, 10.0f + (type.index * brushSize.y * 0.5f));
             brushButton.GetComponent<RectTransform>().anchorMin = Vector2.zero;

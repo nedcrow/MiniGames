@@ -5,11 +5,13 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class CursorComponent : MonoBehaviour
 {
-    private Vector3 DefaultPosition = Vector3.one * -99;
+    public Vector3 DefaultPosition = Vector3.one * -99;
+    public bool usedBrush = false;
+
     void Start()
     {
         if (IsDuplicated()) return;
-        
+
         Init();
     }
 
@@ -31,15 +33,39 @@ public class CursorComponent : MonoBehaviour
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit Hit;
 
+        bool hitTile = Physics.Raycast(ray, out Hit) && Hit.collider.gameObject.CompareTag("Tile");
+
+        // SelectTile
         if (Input.GetMouseButtonDown(0))
         {
-            if (Physics.Raycast(ray, out Hit) && Hit.collider.gameObject.CompareTag("Tile"))
+            if (hitTile)
             {
-                TileComponent tile = Hit.collider.gameObject.GetComponent<TileComponent>();                
+                TileComponent tile = Hit.collider.gameObject.GetComponent<TileComponent>();
                 UpdateCurrentSelectedTile(tile);
             }
-            else {
+            else
+            {
                 transform.position = DefaultPosition;
+            }
+        }
+
+        // DrawTile
+        if (Input.GetMouseButtonDown(0) && UIManager.instance.brushButtonsWidget.selectedBrush != null)
+        {
+            usedBrush = true;
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            usedBrush = false;
+        }
+
+        if (usedBrush)
+        {
+            if (hitTile)
+            {
+                TileComponent tile = Hit.collider.gameObject.GetComponent<TileComponent>();
+                UpdateCurrentSelectedTile(tile);
+                DrawTile((ETileType)System.Convert.ToInt32(UIManager.instance.brushButtonsWidget.selectedBrush.name.Split("_")[1]));
             }
         }
     }
@@ -55,14 +81,26 @@ public class CursorComponent : MonoBehaviour
 
         Debug.Log(
             (oldTileGameObj ? oldTileGameObj.GetComponent<TileComponent>().currentType.ToString() : "Null") +
-            (oldTileGameObj ? oldTileGameObj.transform.position : "(Null position)")+ 
-            " -> " + 
+            (oldTileGameObj ? oldTileGameObj.transform.position : "(Null position)") +
+            " -> " +
             currentTile.currentType.ToString() +
             pos
             );
 
         PuzzleManager.instance.GetComponent<TileMapComponent>().currentSelectedTile = currentTile.gameObject;
         // 현재 게임 모드가 에디트 모드일 때와 플레이 모드일 때 구분
+
+    }
+
+    private void DrawTile(ETileType tileType)
+    {
+        bool isNullBrush = UIManager.instance.brushButtonsWidget.selectedBrush == null;
+        if (isNullBrush) return;
+
+        TileComponent tileComponent = PuzzleManager.instance.GetComponent<TileMapComponent>().currentSelectedTile.GetComponent<TileComponent>();
+        if (!tileComponent) return;
+
+        tileComponent.ChangeTileType(tileType);
 
     }
 }

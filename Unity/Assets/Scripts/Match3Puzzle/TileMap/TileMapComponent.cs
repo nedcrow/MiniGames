@@ -182,11 +182,7 @@ public class TileMapComponent : MonoBehaviour
     private void ChangeTileType(GameObject tile, ETileType tileType)
     {
         TileComponent tileCompnent = tile.GetComponent<TileComponent>();
-        tileCompnent.currentType = tileType;
-
-        tile.GetComponent<MeshRenderer>().material = PuzzleManager.instance.tileMaterials[
-             Mathf.Clamp((int)tileCompnent.currentType, 0, PuzzleManager.instance.tileMaterials.Length)
-        ];
+        tileCompnent.ChangeTileType(tileType);
     }
 
     // 맵 생성에 스포너 추가

@@ -11,6 +11,21 @@ public class TileComponent : MonoBehaviour
     public int maxHP;
     public int currentHP;
 
+    public void ChangeTileType(ETileType tileType)
+    {
+        currentType = tileType;
+
+        if(PuzzleManager.instance.tileMaterials.Length <= (int)currentType)
+        {
+            Debug.LogWarning("Index Out Of Range Exception(PuzzleManager.tileMaterials): {" + (int)currentType + "} in ChangeTileType from TileComponent");
+            return;
+        }
+
+        GetComponent<MeshRenderer>().material = PuzzleManager.instance.tileMaterials[
+             Mathf.Clamp((int)currentType, 0, PuzzleManager.instance.tileMaterials.Length)
+        ];
+    }
+
     private IEnumerator moveTo_co;
     public void MoveTo(Vector2Int targetTilePosion, float targetSpeed = 1.0f)
     {

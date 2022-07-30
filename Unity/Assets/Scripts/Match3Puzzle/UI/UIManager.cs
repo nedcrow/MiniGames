@@ -32,11 +32,10 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-    public GameObject selecedBrush;
     public GameObject mainCanvas;
+    public BrushButtonsWidget brushButtonsWidget;
 
     TileMapComponent tileMapComponent;
-    BrushButtonsWidget brushButtonsWidget;
     GameObject editModeButton;
     GameObject playModeButton;
 
