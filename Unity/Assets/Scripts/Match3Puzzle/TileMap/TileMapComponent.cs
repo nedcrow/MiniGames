@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System.IO;
 using System.Linq;
+using System.Text;
+using UnityEngine;
+
 
 public class TileMapComponent : MonoBehaviour
 {
@@ -21,6 +24,7 @@ public class TileMapComponent : MonoBehaviour
     [SerializeField]
     public Vector2Int tileMapSize = Vector2Int.one;
 
+    public string currentTileMapID = "map01";
     public GameObject currentSelectedTile;
     public GameObject swapingTargetTile;
 
@@ -158,8 +162,10 @@ public class TileMapComponent : MonoBehaviour
             ChangeTileType(currentSelectedTile, ETileType.S6);
         }
     }
+
     public void SortTileList()
     {
+        Vector2Int mapSize = new Vector2Int(tileList.Count, tileList[0].Count);
         List<GameObject> mergedTileList = new List<GameObject>();
         foreach(List<GameObject> tiles in tileList)
         {
@@ -167,6 +173,60 @@ public class TileMapComponent : MonoBehaviour
         }
         mergedTileList.OrderBy(x => x.GetComponent<TileComponent>().currentTilePosition.x).ToList();
         // 다시 분리
+        tileList = new List<List<GameObject>>();
+        for(int i=0; i< mapSize.x; i++)
+        {
+            List<GameObject> tiles = new List<GameObject>();
+            for (int j = 0; j < mapSize.y; j++)
+            {
+                int index = mapSize.x * i + j;
+                tiles.Add(mergedTileList[index]);
+            }
+            tileList.Add(tiles);
+        }
+    }
+
+    public bool Save()
+    {
+        string tileMap_Json = GetTileMap_JSON();
+        string dir = Application.dataPath + "/Save/";
+        string path = dir + currentTileMapID + ".map";
+
+        if(currentTileMapID =="" || Path.GetDirectoryName(path) == "")
+        {
+            Debug.LogWarning("please set file name.");
+            return false;
+        }
+
+        Directory.CreateDirectory(Path.GetDirectoryName(dir));
+        File.WriteAllText(path, tileMap_Json);
+        return true;
+    }
+
+    public void LoadTileMap_JSON()
+    {
+        // Json 불러오기
+        // 불러온 맵으로 update
+    }
+
+    private string GetTileMap_JSON()
+    {
+        TileMap tileMap = new TileMap();
+        tileMap.id = "noname";
+        tileMap.description = "tile size is " + tileMapSize.x + " x " + tileMapSize.y;
+        tileMap.SetMapSize(tileMapSize.x, tileMapSize.y);
+        foreach (List<GameObject> tiles in tileList)
+        {
+            for (int i=0; i<tiles.Count; i++)
+            {
+                Tile tileObj = new Tile();
+                TileComponent tileComponent = tiles[i].GetComponent<TileComponent>();
+                tileObj.type = (int)tileComponent.currentType;
+                tileObj.position = new int[2] { tileComponent.currentTilePosition.x, tileComponent.currentTilePosition.y };
+                tileMap.tileList.Add(tileObj);
+            }
+        }        
+        return Newtonsoft.Json.JsonConvert.SerializeObject(tileMap);
     }
 
     private bool IsMatchNormal() { 
