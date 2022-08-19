@@ -174,13 +174,16 @@ public class TileMapComponent : MonoBehaviour
         mergedTileList.OrderBy(x => x.GetComponent<TileComponent>().currentTilePosition.x).ToList();
         // 다시 분리
         tileList = new List<List<GameObject>>();
+        int count = 0;
         for(int i=0; i< mapSize.x; i++)
         {
             List<GameObject> tiles = new List<GameObject>();
             for (int j = 0; j < mapSize.y; j++)
             {
-                int index = mapSize.x * i + j;
+                int index = mapSize.y * i + j;
                 tiles.Add(mergedTileList[index]);
+                count++;
+                Debug.Log(count + " / " + mergedTileList.Count);
             }
             tileList.Add(tiles);
         }
@@ -188,7 +191,7 @@ public class TileMapComponent : MonoBehaviour
 
     public bool Save()
     {
-        string tileMap_Json = GetTileMap_JSON();
+        string tileMap_Json = GetTileMap_JSON(currentTileMapID);
         string dir = Application.dataPath + "/Save/";
         string path = dir + currentTileMapID + ".map";
 
@@ -203,16 +206,49 @@ public class TileMapComponent : MonoBehaviour
         return true;
     }
 
-    public void LoadTileMap_JSON()
+    public bool LoadTileMap_JSON(string path)
     {
-        // Json 불러오기
-        // 불러온 맵으로 update
+        // 경로 이상 체크
+        if (Path.GetDirectoryName(path) == "")
+        {
+            Debug.LogWarning("please select file.");
+            return false;
+        }
+
+        if (NedCrow.Convert.Right(path, 4) != ".map")
+        {
+            Debug.LogWarning("please load file has extension '.map'.");
+            return false;
+        }
+
+        // Load TileMap data
+        StreamReader r = new StreamReader(path);
+        string jsonString = r.ReadToEnd();
+
+        TileMap tilemap = Newtonsoft.Json.JsonConvert.DeserializeObject<TileMap>(jsonString);
+
+        if (tilemap != null) Debug.Log("hello: " + tilemap.id);
+
+
+        // Update tilemap
+        tileMapSize.x = tilemap.GetMapSize().x;
+        tileMapSize.y = tilemap.GetMapSize().y;
+        PuzzleManager.instance.DrawTileMap();
+
+        foreach(var tile in tilemap.tileList.Select((value, index) => (value, index)))
+        {
+            GameObject currentTile = tileList[tile.index / tileMapSize.x][tile.index % tileMapSize.y];
+            currentTile.GetComponent<TileComponent>().ChangeTileType((ETileType)tile.value.type);
+            currentTile.transform.position = new Vector3(tile.value.position[0], tile.value.position[1], currentTile.transform.position.z);
+        }
+
+        return true;
     }
 
-    private string GetTileMap_JSON()
+    private string GetTileMap_JSON(string mapID = "noname")
     {
         TileMap tileMap = new TileMap();
-        tileMap.id = "noname";
+        tileMap.id = mapID;
         tileMap.description = "tile size is " + tileMapSize.x + " x " + tileMapSize.y;
         tileMap.SetMapSize(tileMapSize.x, tileMapSize.y);
         foreach (List<GameObject> tiles in tileList)

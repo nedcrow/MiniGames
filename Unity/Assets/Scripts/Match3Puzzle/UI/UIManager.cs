@@ -42,6 +42,8 @@ public class UIManager : MonoBehaviour
     GameObject exitButton_FileName;
     GameObject saveAsButton;    
     GameObject loadButton;
+    Button loadButtonInPanel;
+    public GameObject fileViewer;
     public GameObject fileNamePanel;
 
     void Start()
@@ -66,13 +68,20 @@ public class UIManager : MonoBehaviour
         exitButton_FileName = GameObject.Find("ExitButton_FileName");
         saveAsButton = GameObject.Find("SaveAsButton");
         loadButton = GameObject.Find("LoadButton");
+        loadButtonInPanel = GameObject.Find("SubmitButton").GetComponent<Button>();
+        fileViewer = GameObject.Find("SimpleFileBrowserCanvas");
         fileNamePanel = GameObject.Find("FileNamePanel");
+        
         saveButton.GetComponent<Button>().onClick.AddListener(OnClickedSaveButton);
         saveButtonInPanel.GetComponent<Button>().onClick.AddListener(OnClickedSaveButtonInPanel);
         exitButton_FileName.GetComponent<Button>().onClick.AddListener(OnClickedExitPanelButton);
         saveAsButton.GetComponent<Button>().onClick.AddListener(OnClickedSaveAsButton);
         loadButton.GetComponent<Button>().onClick.AddListener(OnClickedLoadButton);
+        loadButtonInPanel.onClick.AddListener(OnClickedLoadButtonInPanel);
+        fileViewer.SetActive(false);
         fileNamePanel.SetActive(false);
+
+        SimpleFileBrowser.FileBrowser.SetFilters(true, ".map");
     }
 
     void OnClickedEditButton()
@@ -126,12 +135,23 @@ public class UIManager : MonoBehaviour
     void OnClickedSaveAsButton()
     {
         // 일시정지
-        // 이름 묻기
         fileNamePanel.SetActive(true);
     }
 
     void OnClickedLoadButton() {
-        tileMapComponent.LoadTileMap_JSON();
+        
+        if (fileViewer != null)
+        {
+            fileViewer.SetActive(true);
+            SimpleFileBrowser.FileBrowser fileBrowser = fileViewer.GetComponent<SimpleFileBrowser.FileBrowser>();
+            fileBrowser.OnPathChanged(Application.dataPath + "/Save");
+        }        
+    }
+
+    void OnClickedLoadButtonInPanel()
+    {
+        if (SimpleFileBrowser.FileBrowser.Result == null) return;
+        tileMapComponent.LoadTileMap_JSON(SimpleFileBrowser.FileBrowser.Result[0]);
     }
 
 

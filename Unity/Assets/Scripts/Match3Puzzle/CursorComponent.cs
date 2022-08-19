@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [ExecuteInEditMode]
-public class CursorComponent : MonoBehaviour
+public class CursorComponent : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerEnterHandler
 {
     public Vector3 DefaultPosition = Vector3.one * -99;
 
@@ -19,6 +20,22 @@ public class CursorComponent : MonoBehaviour
         gameObject.tag = "Cursor";
         transform.position = DefaultPosition;
     }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        Debug.Log("Clicked: " + eventData.pointerCurrentRaycast.gameObject.name);
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        Debug.Log("Mouse Down: " + eventData.pointerCurrentRaycast.gameObject.name);
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        Debug.Log("Mouse Enter");
+    }
+
     bool IsDuplicated()
     {
         int countOfCursor = GameObject.FindGameObjectsWithTag("Cursor").Length;
@@ -38,7 +55,7 @@ public class CursorComponent : MonoBehaviour
         bool pressedCtr = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
 
         if (Input.GetMouseButtonUp(0))
-        {            
+        {
             if (pressedCtr)
             {
                 bool drawnTiles = UIManager.instance.brushButtonsWidget.DrawTiles(tileComponent);
