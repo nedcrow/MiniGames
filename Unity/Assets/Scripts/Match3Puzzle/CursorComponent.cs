@@ -51,6 +51,9 @@ public class CursorComponent : MonoBehaviour, IPointerClickHandler, IPointerDown
         bool hitTile = Physics.Raycast(ray, out Hit) && Hit.collider.gameObject.CompareTag("Tile");
         if (!hitTile) return;
 
+        if (PuzzleManager.instance.tileMapComponent.HasMovingTile()) return;
+
+
         TileComponent tileComponent = Hit.collider.gameObject.GetComponent<TileComponent>();
         bool pressedCtr = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
 

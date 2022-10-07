@@ -84,11 +84,14 @@ public class PuzzleManager : MonoBehaviour
 
     public bool UpdateCurrentSelectedTile(TileComponent currentTileComponent)
     {
+        tileMapComponent.UpdateTileListAfterBrokenThose(new Vector2Int[1] { currentTileComponent.currentTilePosition });
+
         GameObject oldTileGameObj = tileMapComponent.currentSelectedTile;
         bool isDifferent = oldTileGameObj != currentTileComponent.gameObject;
         if (!isDifferent) return false;
 
         GetComponent<TileMapComponent>().currentSelectedTile = currentTileComponent.gameObject;
+
         // 현재 게임 모드가 에디트 모드일 때와 플레이 모드일 때 구분
 
         return true;
@@ -99,6 +102,7 @@ public class PuzzleManager : MonoBehaviour
     #region Puzzle Life Cycle
     public float timelimit = 0;
     public float fps = 30;
+    public int remainingTurn = 999;
     private float currentTime = 0;
     [SerializeField]
     private EPuzzleState currentPuzzleState = EPuzzleState.Wait;
@@ -107,6 +111,12 @@ public class PuzzleManager : MonoBehaviour
         switch (currentPuzzleState)
         {
             case EPuzzleState.Wait:
+                // 매칭 가능여부 탐색
+                // 매칭 가능하지만, 매칭은 없을 때 턴 증가
+                remainingTurn -= 1;
+                if (remainingTurn < 0) // 게임오버
+                // 매칭 가능이 없으면 재 배치 위치 루프 탐색 후 배치
+                // 배치 종료 확인
                 if (timelimit > 0)
                 {
                     if (currentTime >= timelimit)
@@ -117,16 +127,24 @@ public class PuzzleManager : MonoBehaviour
                     }
                     currentTime += 1 / fps;
                 }
+                else
+                {
+                    currentPuzzleState = EPuzzleState.Match;
+                }
                 break;
 
             case EPuzzleState.Match:
+                // 매칭 및 스패셜 타일로 인한 폭파 목록 반환
                 tileMapComponent.MatchTileList();
                 break;
 
-            case EPuzzleState.Effect:
+            case EPuzzleState.Effect: 
+                // 폭파 대기 목록이 비어있으면, 유저 인터렉션 있었으면 배치 취소
+                // 비어있지 않으면 폭파
                 break;
 
             case EPuzzleState.Spawn:
+                // 생성 후 배치
                 break;
         }
         yield return new WaitForSeconds(1 / fps);

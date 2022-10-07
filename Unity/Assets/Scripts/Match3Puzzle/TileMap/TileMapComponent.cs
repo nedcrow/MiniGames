@@ -28,6 +28,8 @@ public class TileMapComponent : MonoBehaviour
     public GameObject currentSelectedTile;
     public GameObject swapingTargetTile;
 
+    TileSpawnerList tileSpawner = new TileSpawnerList();
+
     public void UpdateTileMap(int x, int y)
     {
         tileMapSize = new Vector2Int(x, y);
@@ -49,7 +51,7 @@ public class TileMapComponent : MonoBehaviour
         }
 
         // X열 삭제
-        int countX = x - tileList.Count();        
+        int countX = x - tileList.Count();
         if (countX < 0)
         {
             for (int i = 0; i < Mathf.Abs(countX); i++)
@@ -106,13 +108,17 @@ public class TileMapComponent : MonoBehaviour
             }
         }
 
+        tileSpawner.CreateSpawnerGameObjects(x, y);
+
+
         foreach (var tiles in tileList.Select((value, index) => new { value, index }))
         {
-            foreach (var tile in tiles.value.Select((value, index) => new {value, index}))
+            foreach (var tile in tiles.value.Select((value, index) => new { value, index }))
             {
 
                 SpawnTile(tile.value, new Vector2Int(tiles.index, tile.index), PuzzleManager.instance.globalUsingTypes);
             }
+
         }
         SortTileList();
     }
@@ -120,7 +126,7 @@ public class TileMapComponent : MonoBehaviour
     public void MatchTileList()
     {
         demolishingTargetList = new List<GameObject>();
-        
+
         SortTileList();
         int countOfSameless = 0;
         // 선택 타일 가로(tileList[y-1]), 세로(tileList[0~n-1][x-1])
@@ -167,7 +173,7 @@ public class TileMapComponent : MonoBehaviour
     {
         Vector2Int mapSize = new Vector2Int(tileList.Count, tileList[0].Count);
         List<GameObject> mergedTileList = new List<GameObject>();
-        foreach(List<GameObject> tiles in tileList)
+        foreach (List<GameObject> tiles in tileList)
         {
             mergedTileList.AddRange(tiles);
         }
@@ -175,7 +181,7 @@ public class TileMapComponent : MonoBehaviour
         // 다시 분리
         tileList = new List<List<GameObject>>();
         int count = 0;
-        for(int i=0; i< mapSize.x; i++)
+        for (int i = 0; i < mapSize.x; i++)
         {
             List<GameObject> tiles = new List<GameObject>();
             for (int j = 0; j < mapSize.y; j++)
@@ -183,11 +189,24 @@ public class TileMapComponent : MonoBehaviour
                 int index = mapSize.y * i + j;
                 tiles.Add(mergedTileList[index]);
                 count++;
-                Debug.Log(count + " / " + mergedTileList.Count);
             }
             tileList.Add(tiles);
         }
     }
+
+    public bool HasMovingTile()
+    {
+        foreach (List<GameObject> tiles in tileList)
+        {
+            foreach (GameObject tile in tiles)
+            {
+                if (tile.GetComponent<TileComponent>().isMoving) return true;
+            }
+        }
+
+        return false;
+    }
+
 
     public bool Save()
     {
@@ -195,7 +214,7 @@ public class TileMapComponent : MonoBehaviour
         string dir = Application.dataPath + "/Save/";
         string path = dir + currentTileMapID + ".map";
 
-        if(currentTileMapID =="" || Path.GetDirectoryName(path) == "")
+        if (currentTileMapID == "" || Path.GetDirectoryName(path) == "")
         {
             Debug.LogWarning("please set file name.");
             return false;
@@ -235,7 +254,7 @@ public class TileMapComponent : MonoBehaviour
         tileMapSize.y = tilemap.GetMapSize().y;
         PuzzleManager.instance.DrawTileMap();
 
-        foreach(var tile in tilemap.tileList.Select((value, index) => (value, index)))
+        foreach (var tile in tilemap.tileList.Select((value, index) => (value, index)))
         {
             GameObject currentTile = tileList[tile.index / tileMapSize.x][tile.index % tileMapSize.y];
             currentTile.GetComponent<TileComponent>().ChangeTileType((ETileType)tile.value.type);
@@ -253,7 +272,7 @@ public class TileMapComponent : MonoBehaviour
         tileMap.SetMapSize(tileMapSize.x, tileMapSize.y);
         foreach (List<GameObject> tiles in tileList)
         {
-            for (int i=0; i<tiles.Count; i++)
+            for (int i = 0; i < tiles.Count; i++)
             {
                 Tile tileObj = new Tile();
                 TileComponent tileComponent = tiles[i].GetComponent<TileComponent>();
@@ -261,22 +280,30 @@ public class TileMapComponent : MonoBehaviour
                 tileObj.position = new int[2] { tileComponent.currentTilePosition.x, tileComponent.currentTilePosition.y };
                 tileMap.tileList.Add(tileObj);
             }
-        }        
+        }
         return Newtonsoft.Json.JsonConvert.SerializeObject(tileMap);
     }
 
-    private bool IsMatchNormal() { 
+    private bool IsMatchNormal()
+    {
         // 한 줄에 3개 이상 시 return true;
-        return false; }
-    private bool IsMatchArrow_V() {
+        return false;
+    }
+    private bool IsMatchArrow_V()
+    {
         // 세로 줄에 4개 이상 시 return true;
-        return false; }
-    private bool isMatchArrow_H() {
+        return false;
+    }
+    private bool isMatchArrow_H()
+    {
         // 가로 줄에 4개 이상 시 return true;
-        return false; }
-    private bool isMatchBox() {
+        return false;
+    }
+    private bool isMatchBox()
+    {
         // 세로 줄에 4개 이상 시 return true;
-        return false; }
+        return false;
+    }
     private bool isMatchFive() { return false; }
     private bool isMatchStraight() { return false; }
 
@@ -287,21 +314,21 @@ public class TileMapComponent : MonoBehaviour
     }
 
     // 맵 생성에 스포너 추가
-    private GameObject SpawnTile(GameObject tile, Vector2Int spawnPosition, ETileType[] usingTypes)
+    private GameObject SpawnTile(GameObject tile, Vector2Int spawnPoint, ETileType[] usingTypes)
     {
         TileComponent tileCompnent = tile.GetComponent<TileComponent>();
         if (tileCompnent)
         {
             tileCompnent.currentType = (ETileType)usingTypes.GetValue(Random.Range(0, usingTypes.Length));
-            tileCompnent.currentTilePosition = spawnPosition;
+            tileCompnent.currentTilePosition = spawnPoint;
         }
 
-        tile.transform.localPosition = new Vector3(spawnPosition.x, spawnPosition.y, .0f) * tileDistanceUnit;
+        tile.transform.localPosition = new Vector3(spawnPoint.x, spawnPoint.y, .0f) * tileDistanceUnit;
         tile.transform.localRotation = Quaternion.Euler(-90f, 0f, 0f);
         tile.transform.localScale = Vector3.one * tileScaleUnit;
         tile.name = "Tile_" + tileCompnent.currentType.ToString();
 
-        if(PuzzleManager.instance.tileMaterials.Length < 1)
+        if (PuzzleManager.instance.tileMaterials.Length < 1)
         {
             Debug.LogError("Empty material list of PuzzleManager");
             return null;
@@ -315,5 +342,96 @@ public class TileMapComponent : MonoBehaviour
         return tile;
     }
 
+    public void UpdateTileListAfterBrokenThose(Vector2Int[] BrokenTilePoints)
+    {
+        GameObject brokenGameObject;
+        List<int> moveableTileList = new List<int>();
+        Vector2Int targetLocation = Vector2Int.zero;
+        Vector3 teleportationLocation;
 
+        int add_TargetPos_X = 0;
+        int add_TargetPos_Y = 0;
+        int add_Teleport_X = 0;
+        int add_Teleport_Y = 0;
+        float multi_Teleport_X = .0f;
+        float multi_Teleport_Y = .0f;
+        int insertIndex = 0;
+        int multi_index = 0; 
+        int countOfLoop = 0;
+        bool isVerticalGravity = true;
+
+        switch (PuzzleManager.instance.globalGravity)
+        {
+            case EGravity.Down:
+                add_TargetPos_X = 0; add_TargetPos_Y = -1; multi_Teleport_X = 1; multi_Teleport_Y = 0; add_Teleport_X = 0; add_Teleport_Y = tileMapSize.y;
+                insertIndex = tileMapSize.y - 1;
+                multi_index = 1;  countOfLoop = tileMapSize.y; isVerticalGravity = true;
+                break;
+            case EGravity.Up:
+                add_TargetPos_X = 0; add_TargetPos_Y = 1; multi_Teleport_X = 1; multi_Teleport_Y = 0; add_Teleport_X = 0; add_Teleport_Y = -1;
+                insertIndex = 0;
+                multi_index = -1; countOfLoop = 1; isVerticalGravity = true;
+                break;
+            case EGravity.Right:
+                add_TargetPos_X = 1; add_TargetPos_Y = 0; multi_Teleport_X = 0; multi_Teleport_Y = 1; add_Teleport_X = -1; add_Teleport_Y = 0;
+                insertIndex = 0;
+                multi_index = -1; countOfLoop = 1; isVerticalGravity = false;
+                break;
+            case EGravity.Left:
+                add_TargetPos_X = -1; add_TargetPos_Y = 0; multi_Teleport_X = 0; multi_Teleport_Y = 1; add_Teleport_X = tileMapSize.x; add_Teleport_Y = 0;
+                insertIndex = tileMapSize.x - 1;
+                multi_index = 1; countOfLoop = tileMapSize.x; isVerticalGravity = false;
+                break;
+        }
+
+        foreach (Vector2Int brokenPoint in BrokenTilePoints)
+        {
+            // teleport broken tile
+            brokenGameObject = tileList[brokenPoint.x][brokenPoint.y].gameObject;
+            teleportationLocation.x = brokenGameObject.transform.position.x * multi_Teleport_X + add_Teleport_X;
+            teleportationLocation.y = brokenGameObject.transform.position.y * multi_Teleport_Y + add_Teleport_Y;
+            teleportationLocation.z = brokenGameObject.transform.position.z;
+
+            brokenGameObject.transform.position = teleportationLocation;
+            brokenGameObject.GetComponent<TileComponent>().currentTilePosition.x = (int)(brokenPoint.x * multi_Teleport_X + add_Teleport_X);
+            brokenGameObject.GetComponent<TileComponent>().currentTilePosition.y = (int)(brokenPoint.y * multi_Teleport_Y + add_Teleport_Y);
+
+            
+            // update tile list
+            if (isVerticalGravity)
+            {
+                tileList[brokenPoint.x].RemoveAt(brokenPoint.y);
+                tileList[brokenPoint.x].Insert(insertIndex, brokenGameObject);
+            }
+            else
+            {
+                int ii = brokenPoint.x * multi_index;
+                tileList[brokenPoint.x].RemoveAt(brokenPoint.y);
+                while(ii < countOfLoop-1)
+                {
+                    int index_X = ii * multi_index;
+                    int index_Next_X = (index_X + multi_index);
+
+                    tileList[index_X].Insert(brokenPoint.y, tileList[index_Next_X][brokenPoint.y].gameObject);
+                    tileList[index_Next_X].RemoveAt(brokenPoint.y);
+                    ii += 1;
+                }
+                tileList[insertIndex].Insert(brokenPoint.y, brokenGameObject);
+            }
+            
+
+            // slide tiles
+            int i = isVerticalGravity ? brokenPoint.y * multi_index : brokenPoint.x * multi_index;
+            while (i < countOfLoop)
+            {
+                int index_X = isVerticalGravity ? brokenPoint.x : i * multi_index;
+                int index_Y = isVerticalGravity ? i * multi_index : brokenPoint.y;
+                Debug.Log(i + "<" + countOfLoop);
+                targetLocation.x = tileList[index_X][index_Y].GetComponent<TileComponent>().currentTilePosition.x + add_TargetPos_X;
+                targetLocation.y = tileList[index_X][index_Y].GetComponent<TileComponent>().currentTilePosition.y + add_TargetPos_Y;
+                tileList[index_X][index_Y].GetComponent<TileComponent>().MoveTo(targetLocation);
+                i += 1;
+            }
+        }
+    }
 }
