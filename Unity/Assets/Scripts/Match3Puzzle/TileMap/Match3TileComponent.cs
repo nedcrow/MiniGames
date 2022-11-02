@@ -2,16 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TileComponent : MonoBehaviour
-{
-    public ETileType currentType = ETileType.Apple;
+public class Match3TileComponent : TileComponent
+{    
+    [Header("Match3 properties")]
     public bool hasMovement = true;
     public bool isMoving = false;
     public bool canExplosion = true;
-    public Vector2Int currentTilePosition;
-    public int maxHP;
-    public int currentHP;
 
+    [SerializeField]
+    protected int maxHP;
+
+    [SerializeField]
+    protected int currentHP;
+
+    [SerializeField]
+    protected ETileType currentType = ETileType.Apple;
+
+    public ETileType GetCurrentType()
+    {
+        return currentType;
+    }
     public void ChangeTileType(ETileType tileType)
     {
         currentType = tileType;
@@ -29,16 +39,16 @@ public class TileComponent : MonoBehaviour
 
     private IEnumerator moveTo_co;
 
-    public void Move_Up() { MoveTo(new Vector2Int(currentTilePosition.x, currentTilePosition.y + 1)); }
-    public void Move_Down() { MoveTo(new Vector2Int(currentTilePosition.x, currentTilePosition.y - 1)); }
-    public void Move_Right() { MoveTo(new Vector2Int(currentTilePosition.x + 1, currentTilePosition.y)); }
-    public void Move_Left() { MoveTo(new Vector2Int(currentTilePosition.x - 1, currentTilePosition.y)); }
+    public void Move_Up() { MoveTo(new Vector2Int(tileLocation.x, tileLocation.y + 1)); }
+    public void Move_Down() { MoveTo(new Vector2Int(tileLocation.x, tileLocation.y - 1)); }
+    public void Move_Right() { MoveTo(new Vector2Int(tileLocation.x + 1, tileLocation.y)); }
+    public void Move_Left() { MoveTo(new Vector2Int(tileLocation.x - 1, tileLocation.y)); }
 
     public void MoveTo(Vector2Int targetTilePosion, float targetSpeed = 1.0f)
     {
         moveTo_co = MoveTo_Co(new Vector3(targetTilePosion.x, targetTilePosion.y, 0f));
         StartCoroutine(moveTo_co);
-        currentTilePosition = targetTilePosion;
+        tileLocation = targetTilePosion;
     }
 
     private IEnumerator MoveTo_Co(Vector3 targetPosition, float targetSpeed = 1.0f)
