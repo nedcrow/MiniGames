@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 
 
-public class TileMapComponent : MonoBehaviour
+public class Match3TileMapComponent : MonoBehaviour
 {
     public List<List<GameObject>> tileList;
     public List<GameObject> demolishingTargetList;
@@ -177,7 +177,7 @@ public class TileMapComponent : MonoBehaviour
         {
             mergedTileList.AddRange(tiles);
         }
-        mergedTileList.OrderBy(x => x.GetComponent<TileComponent>().currentTilePosition.x).ToList();
+        mergedTileList.OrderBy(x => x.GetComponent<Match3TileComponent>().tileLocation.x).ToList();
         // 다시 분리
         tileList = new List<List<GameObject>>();
         int count = 0;
@@ -200,7 +200,7 @@ public class TileMapComponent : MonoBehaviour
         {
             foreach (GameObject tile in tiles)
             {
-                if (tile.GetComponent<TileComponent>().isMoving) return true;
+                if (tile.GetComponent<Match3TileComponent>().isMoving) return true;
             }
         }
 
@@ -257,7 +257,7 @@ public class TileMapComponent : MonoBehaviour
         foreach (var tile in tilemap.tileList.Select((value, index) => (value, index)))
         {
             GameObject currentTile = tileList[tile.index / tileMapSize.x][tile.index % tileMapSize.y];
-            currentTile.GetComponent<TileComponent>().ChangeTileType((ETileType)tile.value.type);
+            currentTile.GetComponent<Match3TileComponent>().ChangeTileType((ETileType)tile.value.type);
             currentTile.transform.position = new Vector3(tile.value.position[0], tile.value.position[1], currentTile.transform.position.z);
         }
 
@@ -275,9 +275,9 @@ public class TileMapComponent : MonoBehaviour
             for (int i = 0; i < tiles.Count; i++)
             {
                 Tile tileObj = new Tile();
-                TileComponent tileComponent = tiles[i].GetComponent<TileComponent>();
-                tileObj.type = (int)tileComponent.currentType;
-                tileObj.position = new int[2] { tileComponent.currentTilePosition.x, tileComponent.currentTilePosition.y };
+                Match3TileComponent tileComponent = tiles[i].GetComponent<Match3TileComponent>();
+                tileObj.type = (int)tileComponent.GetCurrentType();
+                tileObj.position = new int[2] { tileComponent.tileLocation.x, tileComponent.tileLocation.y };
                 tileMap.tileList.Add(tileObj);
             }
         }
@@ -309,24 +309,26 @@ public class TileMapComponent : MonoBehaviour
 
     private void ChangeTileType(GameObject tile, ETileType tileType)
     {
-        TileComponent tileCompnent = tile.GetComponent<TileComponent>();
+        Match3TileComponent tileCompnent = tile.GetComponent<Match3TileComponent>();
         tileCompnent.ChangeTileType(tileType);
     }
 
     // 맵 생성에 스포너 추가
-    private GameObject SpawnTile(GameObject tile, Vector2Int spawnPoint, ETileType[] usingTypes)
+    private GameObject SpawnTile(GameObject tile, Vector2Int spawnPoint, ETileType[] currentUsingTypes)
     {
-        TileComponent tileCompnent = tile.GetComponent<TileComponent>();
+        Match3TileComponent tileCompnent = tile.GetComponent<Match3TileComponent>();
         if (tileCompnent)
         {
-            tileCompnent.currentType = (ETileType)usingTypes.GetValue(Random.Range(0, usingTypes.Length));
-            tileCompnent.currentTilePosition = spawnPoint;
+            tileCompnent.ChangeTileType((ETileType) currentUsingTypes.GetValue(
+                    Random.Range(0, currentUsingTypes.Length)
+                    ));
+            tileCompnent.tileLocation = spawnPoint;
         }
 
         tile.transform.localPosition = new Vector3(spawnPoint.x, spawnPoint.y, .0f) * tileDistanceUnit;
         tile.transform.localRotation = Quaternion.Euler(-90f, 0f, 0f);
         tile.transform.localScale = Vector3.one * tileScaleUnit;
-        tile.name = "Tile_" + tileCompnent.currentType.ToString();
+        tile.name = "Tile_" + tileCompnent.GetCurrentType().ToString();
 
         if (PuzzleManager.instance.tileMaterials.Length < 1)
         {
@@ -336,7 +338,7 @@ public class TileMapComponent : MonoBehaviour
 
         // Material from type
         tile.GetComponent<MeshRenderer>().material = PuzzleManager.instance.tileMaterials[
-             Mathf.Clamp((int)tileCompnent.currentType, 0, PuzzleManager.instance.tileMaterials.Length)
+             Mathf.Clamp((int)tileCompnent.GetCurrentType(), 0, PuzzleManager.instance.tileMaterials.Length)
         ];
 
         return tile;
@@ -393,8 +395,8 @@ public class TileMapComponent : MonoBehaviour
             teleportationLocation.z = brokenGameObject.transform.position.z;
 
             brokenGameObject.transform.position = teleportationLocation;
-            brokenGameObject.GetComponent<TileComponent>().currentTilePosition.x = (int)(brokenPoint.x * multi_Teleport_X + add_Teleport_X);
-            brokenGameObject.GetComponent<TileComponent>().currentTilePosition.y = (int)(brokenPoint.y * multi_Teleport_Y + add_Teleport_Y);
+            brokenGameObject.GetComponent<Match3TileComponent>().tileLocation.x = (int)(brokenPoint.x * multi_Teleport_X + add_Teleport_X);
+            brokenGameObject.GetComponent<Match3TileComponent>().tileLocation.y = (int)(brokenPoint.y * multi_Teleport_Y + add_Teleport_Y);
 
             
             // update tile list
@@ -427,9 +429,9 @@ public class TileMapComponent : MonoBehaviour
                 int index_X = isVerticalGravity ? brokenPoint.x : i * multi_index;
                 int index_Y = isVerticalGravity ? i * multi_index : brokenPoint.y;
                 Debug.Log(i + "<" + countOfLoop);
-                targetLocation.x = tileList[index_X][index_Y].GetComponent<TileComponent>().currentTilePosition.x + add_TargetPos_X;
-                targetLocation.y = tileList[index_X][index_Y].GetComponent<TileComponent>().currentTilePosition.y + add_TargetPos_Y;
-                tileList[index_X][index_Y].GetComponent<TileComponent>().MoveTo(targetLocation);
+                targetLocation.x = tileList[index_X][index_Y].GetComponent<Match3TileComponent>().tileLocation.x + add_TargetPos_X;
+                targetLocation.y = tileList[index_X][index_Y].GetComponent<Match3TileComponent>().tileLocation.y + add_TargetPos_Y;
+                tileList[index_X][index_Y].GetComponent<Match3TileComponent>().MoveTo(targetLocation);
                 i += 1;
             }
         }

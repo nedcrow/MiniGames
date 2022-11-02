@@ -10,7 +10,7 @@ public class RestedTilles
     public void AddNewTile()
     {
         GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        tile.AddComponent<TileComponent>();
+        tile.AddComponent<Match3TileComponent>();
         tile.tag = "Tile";
         tile.transform.SetParent(GameObject.Find("PuzzleManager").transform);
         restedTileList.Add(tile);

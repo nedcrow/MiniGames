@@ -34,7 +34,7 @@ public class UIManager : MonoBehaviour
     public GameObject mainCanvas;
     public BrushButtonsWidget brushButtonsWidget;
 
-    TileMapComponent tileMapComponent;
+    M3TileMapComponent tileMapComponent;
     GameObject editModeButton;
     GameObject playModeButton;
     GameObject saveButton;

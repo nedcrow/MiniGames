@@ -26,16 +26,17 @@ public class BrushButtonsWidget : MonoBehaviour
         foreach (GameObject brushButton in brushButtonList) brushButton.SetActive(false);
     }
 
-    public bool DrawTiles(TileComponent currentTileComponent)
+    public bool DrawTiles(Match3TileComponent currentTileComponent)
     {
         if (selectedBrush == null) return false;
 
-        TileMapComponent tileMapComponent = PuzzleManager.instance.tileMapComponent;
-        TileComponent oldSelectedTileComponent = tileMapComponent.currentSelectedTile.GetComponent<TileComponent>();
-        List<List<GameObject>> tileList = tileMapComponent.tileList;
+        M3TileMapComponent tileMapComponent = PuzzleManager.instance.tileMapComponent;
+        Match3TileComponent oldSelectedTileComponent = PuzzleManager.instance.selectedTileObj.GetComponent<Match3TileComponent>();
+        List<GameObject> tileList = tileMapComponent.tileObjectList;
+        List<List<int>> tileIndexList = tileMapComponent.tileIndexesList;
 
-        Vector2Int startIndexes = oldSelectedTileComponent.currentTilePosition;
-        Vector2Int endIndexes = currentTileComponent.currentTilePosition;
+        Vector2Int startIndexes = oldSelectedTileComponent.tileLocation;
+        Vector2Int endIndexes = currentTileComponent.tileLocation;
         Vector2Int distance = new Vector2Int(
             Mathf.Abs(endIndexes.x - startIndexes.x)+1,
             Mathf.Abs(endIndexes.y - startIndexes.y)+1
@@ -60,16 +61,17 @@ public class BrushButtonsWidget : MonoBehaviour
         {
             int indexX = startX + ((isWide ? i : index_H) * dir_h);
             int indexY = startY + ((isWide ? index_V : i) * dir_v);
+            int tileIndex = tileIndexList[indexX][indexY];
 
             if (isWide && tangent == 1)
             {
-                DrawTile(tileList[indexX][indexY].GetComponent<TileComponent>());
+                DrawTile(tileList[tileIndex].GetComponent<Match3TileComponent>());
                 index_V += 1;
             }
             else
             {
                 stackedTangent += tangent;
-                DrawTile(tileList[indexX][indexY].GetComponent<TileComponent>());
+                DrawTile(tileList[tileIndex].GetComponent<Match3TileComponent>());
 
                 if (Mathf.Floor(stackedTangent) == limitTangent)
                 {
@@ -77,7 +79,7 @@ public class BrushButtonsWidget : MonoBehaviour
                     if (!isWide) index_H += 1;
                     if (stackedTangent != limitTangent)
                     {
-                        DrawTile(tileList[indexX][indexY].GetComponent<TileComponent>());
+                        DrawTile(tileList[tileIndex].GetComponent<Match3TileComponent>());
                     }
                     stackedTangent = 0;
                 }
@@ -87,7 +89,7 @@ public class BrushButtonsWidget : MonoBehaviour
         return true;
     }
 
-    public bool DrawTile(TileComponent currentTileComponent)
+    public bool DrawTile(Match3TileComponent currentTileComponent)
     {
         if (selectedBrush == null) return false;
 

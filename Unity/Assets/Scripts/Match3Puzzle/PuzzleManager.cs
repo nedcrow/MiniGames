@@ -39,6 +39,8 @@ public class PuzzleManager : MonoBehaviour
     public EGravity globalGravity = EGravity.Down;
     public List<List<EGravity>> gravityMatrix = new List<List<EGravity>>();
 
+    public GameObject selectedTileObj;
+
     [SerializeField]
     private float tileScale_editor = 1.0f;
     [SerializeField]
@@ -46,51 +48,80 @@ public class PuzzleManager : MonoBehaviour
 
     private IEnumerator startPuzzle_co;
 
+    private CursorComponent currentCursorComponent = null;
+
     void Start()
     {
         DrawTileMap();
 
         startPuzzle_co = StartPuzzle_Co();
         StartCoroutine(startPuzzle_co);
+
+        GameObject cursorObj = GameObject.Find("Cursor");
+        if (cursorObj == null) cursorObj = new GameObject();
+        cursorObj.name = "Cursor";
+
+        currentCursorComponent = cursorObj.GetComponent<CursorComponent>();
+        currentCursorComponent = currentCursorComponent == null ? cursorObj.AddComponent<CursorComponent>() : currentCursorComponent;
+        
+        currentCursorComponent.SelectedTileEvent += (GameObject tileObj) =>
+        {
+            selectedTileObj = tileObj;
+        };
     }
 
 
     #region TileMap
     public Material[] tileMaterials;
-    public TileMapComponent tileMapComponent = null;
+    public M3TileMapComponent tileMapComponent = null;
     public void DrawTileMap()
     {
+        if (tileMapComponent == null)
+        {
+            GameObject tileMapObj = GameObject.Find("TileMap");
+            tileMapObj = tileMapObj != null ? tileMapObj : new GameObject();
+
+            tileMapComponent = tileMapObj.GetComponent<M3TileMapComponent>();
+            if (tileMapComponent == null) tileMapComponent = tileMapObj.AddComponent<M3TileMapComponent>();
+        }
+
         UpdateTileMapComponent(
-             new Vector2Int(tileMapComponent.tileMapSize.x, tileMapComponent.tileMapSize.y),
+             new Vector2Int(tileMapComponent.CurrentMapSize.x, tileMapComponent.CurrentMapSize.y),
              tileScale_editor,
              tileDistance_editor
          );
 
         Camera.main.transform.localPosition = new Vector3(
-            (tileMapComponent.tileMapSize.x * 0.5f - 0.5f),
-            (tileMapComponent.tileMapSize.y * 0.5f - 0.5f),
+            (tileMapComponent.CurrentMapSize.x * 0.5f - 0.5f),
+            (tileMapComponent.CurrentMapSize.y * 0.5f - 0.5f),
             -1.0f
         );
     }
 
     public void UpdateTileMapComponent(Vector2Int mapSizeValue, float tileScale = 1.0f, float tileDistance = 1.0f)
     {
-        if (tileMapComponent == null) tileMapComponent = gameObject.AddComponent<TileMapComponent>();
-        //tileMapComponent.UpdateTileMap(tileMapComponent.tileMapSize.x, tileMapComponent.tileMapSize.y);
+        if (tileMapComponent == null)
+        {
+            GameObject tileMapObj = GameObject.Find("TileMap");
+            tileMapObj = tileMapObj != null ? tileMapObj : new GameObject();
+            
+            tileMapComponent = tileMapObj.GetComponent<M3TileMapComponent>();
+            if (tileMapComponent == null) tileMapComponent = tileMapObj.AddComponent<M3TileMapComponent>();
+        } 
+            
         tileMapComponent.tileScaleUnit = tileScale_editor = tileScale;
         tileMapComponent.tileDistanceUnit = tileDistance_editor = tileDistance;
         tileMapComponent.UpdateTileMap(mapSizeValue.x, mapSizeValue.y);
     }
 
-    public bool UpdateCurrentSelectedTile(TileComponent currentTileComponent)
+    public bool UpdateCurrentSelectedTile(Match3TileComponent currentTileComponent)
     {
-        tileMapComponent.UpdateTileListAfterBrokenThose(new Vector2Int[1] { currentTileComponent.currentTilePosition });
+        tileMapComponent.UpdatetileObjectListAfterBrokenThose(new Vector2Int[1] { currentTileComponent.tileLocation });
 
-        GameObject oldTileGameObj = tileMapComponent.currentSelectedTile;
-        bool isDifferent = oldTileGameObj != currentTileComponent.gameObject;
+        bool isDifferent = selectedTileObj != currentTileComponent.gameObject;
         if (!isDifferent) return false;
 
-        GetComponent<TileMapComponent>().currentSelectedTile = currentTileComponent.gameObject;
+        //GetComponent<Match3TileMapComponent>().currentSelectedTile = currentTileComponent.gameObject;
 
         // 현재 게임 모드가 에디트 모드일 때와 플레이 모드일 때 구분
 
@@ -135,7 +166,7 @@ public class PuzzleManager : MonoBehaviour
 
             case EPuzzleState.Match:
                 // 매칭 및 스패셜 타일로 인한 폭파 목록 반환
-                tileMapComponent.MatchTileList();
+                //tileMapComponent.MatchTileList();
                 break;
 
             case EPuzzleState.Effect: 
