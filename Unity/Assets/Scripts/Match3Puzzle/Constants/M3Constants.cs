@@ -1,4 +1,4 @@
-public enum ETileType
+public enum E3MTileType
 {
     None = -1,
     Apple = 0,

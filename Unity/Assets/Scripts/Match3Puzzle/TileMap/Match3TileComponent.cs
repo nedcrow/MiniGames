@@ -16,13 +16,13 @@ public class Match3TileComponent : TileComponent
     protected int currentHP;
 
     [SerializeField]
-    protected ETileType currentType = ETileType.Apple;
+    protected E3MTileType currentType = E3MTileType.Apple;
 
-    public ETileType GetCurrentType()
+    public E3MTileType GetCurrentType()
     {
         return currentType;
     }
-    public void ChangeTileType(ETileType tileType)
+    public void ChangeTileType(E3MTileType tileType)
     {
         currentType = tileType;
 

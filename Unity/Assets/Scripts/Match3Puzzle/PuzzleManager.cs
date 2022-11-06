@@ -34,8 +34,9 @@ public class PuzzleManager : MonoBehaviour
     #endregion
 
     // puzzle properties
+    [Header("PuzzleData")]
     public EGameMode currentGameMode = EGameMode.Play_Normal;
-    public ETileType[] globalUsingTypes = { ETileType.Apple, ETileType.Banana, ETileType.Grape, ETileType.Orange };
+    public E3MTileType[] globalUsingTypes = { E3MTileType.Apple, E3MTileType.Banana, E3MTileType.Grape, E3MTileType.Orange };
     public EGravity globalGravity = EGravity.Down;
     public List<List<EGravity>> gravityMatrix = new List<List<EGravity>>();
 
@@ -72,8 +73,11 @@ public class PuzzleManager : MonoBehaviour
 
 
     #region TileMap
+    [Space(10)]
+    [Header("TilemapData")]
     public Material[] tileMaterials;
-    public M3TileMapComponent tileMapComponent = null;
+    public Match3TileMapComponent tileMapComponent = null;
+    public Vector2Int currentTileMapSize = Vector2Int.one;
     public void DrawTileMap()
     {
         if (tileMapComponent == null)
@@ -81,19 +85,20 @@ public class PuzzleManager : MonoBehaviour
             GameObject tileMapObj = GameObject.Find("TileMap");
             tileMapObj = tileMapObj != null ? tileMapObj : new GameObject();
 
-            tileMapComponent = tileMapObj.GetComponent<M3TileMapComponent>();
-            if (tileMapComponent == null) tileMapComponent = tileMapObj.AddComponent<M3TileMapComponent>();
+            tileMapComponent = tileMapObj.GetComponent<Match3TileMapComponent>();
+            if (tileMapComponent == null) tileMapComponent = tileMapObj.AddComponent<Match3TileMapComponent>();
         }
 
+        currentTileMapSize = currentTileMapSize == Vector2Int.zero ? tileMapComponent.currentMapSize : currentTileMapSize;
         UpdateTileMapComponent(
-             new Vector2Int(tileMapComponent.CurrentMapSize.x, tileMapComponent.CurrentMapSize.y),
+             new Vector2Int(currentTileMapSize.x, currentTileMapSize.y),
              tileScale_editor,
              tileDistance_editor
          );
 
         Camera.main.transform.localPosition = new Vector3(
-            (tileMapComponent.CurrentMapSize.x * 0.5f - 0.5f),
-            (tileMapComponent.CurrentMapSize.y * 0.5f - 0.5f),
+            (tileMapComponent.currentMapSize.x * 0.5f - 0.5f),
+            (tileMapComponent.currentMapSize.y * 0.5f - 0.5f),
             -1.0f
         );
     }
@@ -105,13 +110,14 @@ public class PuzzleManager : MonoBehaviour
             GameObject tileMapObj = GameObject.Find("TileMap");
             tileMapObj = tileMapObj != null ? tileMapObj : new GameObject();
             
-            tileMapComponent = tileMapObj.GetComponent<M3TileMapComponent>();
-            if (tileMapComponent == null) tileMapComponent = tileMapObj.AddComponent<M3TileMapComponent>();
+            tileMapComponent = tileMapObj.GetComponent<Match3TileMapComponent>();
+            if (tileMapComponent == null) tileMapComponent = tileMapObj.AddComponent<Match3TileMapComponent>();
         } 
             
         tileMapComponent.tileScaleUnit = tileScale_editor = tileScale;
         tileMapComponent.tileDistanceUnit = tileDistance_editor = tileDistance;
         tileMapComponent.UpdateTileMap(mapSizeValue.x, mapSizeValue.y);
+        currentTileMapSize = mapSizeValue;
     }
 
     public bool UpdateCurrentSelectedTile(Match3TileComponent currentTileComponent)

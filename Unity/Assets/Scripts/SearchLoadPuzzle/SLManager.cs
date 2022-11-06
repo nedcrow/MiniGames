@@ -31,19 +31,62 @@ public class SLManager : MonoBehaviour
     }
     #endregion
 
-    [SerializeField]
+    [SerializeField, Header("TilemapData")]
     public GameObject tilemapCreatorObj;
+    public Vector2Int currentTileMapSize = Vector2Int.one;
+
+    [Header("CursorData")]
+    public GameObject selectedTileObj;
+    private CursorComponent currentCursorComponent = null;
 
     void Start()
     {
+        SpawnCursor();
+
+        UpdateTileMap();        
+    }
+
+    void UpdateTileMap()
+    {
+        // Set tilemapCreatorObj & SLTilemapComponent
         tilemapCreatorObj = GameObject.Find("TilemapCreator");
-        if(tilemapCreatorObj == null)
+        if (tilemapCreatorObj == null)
         {
             tilemapCreatorObj = new GameObject("TilemapCreator");
             tilemapCreatorObj.AddComponent<SLTilemapComponent>();
         }
         tilemapCreatorObj.transform.SetParent(gameObject.transform);
 
-        tilemapCreatorObj.GetComponent<SLTilemapComponent>().CreateTileMapAt(tilemapCreatorObj);
+        SLTilemapComponent sltilemapComp = tilemapCreatorObj.GetComponent<SLTilemapComponent>();
+
+        // update tilemap
+        sltilemapComp.UpdateTileMap(currentTileMapSize.x, currentTileMapSize.y);
+
+        // camera
+        Vector3 basePos = tilemapCreatorObj.transform.position;
+        SLTilemapComponent tilemapComp = tilemapCreatorObj.GetComponent<SLTilemapComponent>();
+        Camera.main.transform.position = new Vector3(
+            basePos.x + tilemapComp.currentMapSize.x,
+            basePos.y + tilemapComp.currentMapSize.y,
+            basePos.z - 1
+            );
     }
+
+    void SpawnCursor()
+    {
+        GameObject cursorObj = GameObject.Find("Cursor");
+        if (cursorObj == null) cursorObj = new GameObject();
+        cursorObj.name = "Cursor";
+
+        currentCursorComponent = cursorObj.GetComponent<CursorComponent>();
+        currentCursorComponent = currentCursorComponent == null ? cursorObj.AddComponent<CursorComponent>() : currentCursorComponent;
+
+        currentCursorComponent.SelectedTileEvent += (GameObject tileObj) =>
+        {
+            selectedTileObj = tileObj;
+        };
+    }
+
+    // 페어파인더
+    // 선택타일 오브젝트는 다른데 타입이 같으면 페어확정
 }

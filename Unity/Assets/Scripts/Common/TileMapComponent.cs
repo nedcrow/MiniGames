@@ -7,10 +7,10 @@ public class TileMapComponent : MonoBehaviour
 {
     [Header("Basic Properties")]
     public string currentTileMapID = "map01";
-    public Vector2Int CurrentMapSize;
+    public Vector2Int currentMapSize;
     public GameObject tilePrefab = null;
 
-    [HideInInspector]
+    [Min(0.001f)]
     public float tileScaleUnit = 1;
     [HideInInspector]
     public float tileDistanceUnit = 1;
@@ -19,14 +19,15 @@ public class TileMapComponent : MonoBehaviour
     public List<List<int>> tileIndexesList;
 
 
-    private void Start()
-    {
-        UpdateTileMap(CurrentMapSize.x, CurrentMapSize.y);
-    }
-
- 
+    /// <summary>
+    /// minimum size is one(1x1)
+    /// </summary>
+    /// <param name="sizeX"> minimum is 1 </param>
+    /// <param name="sizeY"> minimum is 1 </param>
     public virtual void UpdateTileMap(int sizeX, int sizeY)
     {
+        sizeX = Mathf.Max(sizeX, 1);
+        sizeY = Mathf.Max(sizeY, 1);
         tileObjectList = GetAllChildTiles();
         tileIndexesList = new List<List<int>>();
         int totalTileCount = tileObjectList.Count;
@@ -49,16 +50,16 @@ public class TileMapComponent : MonoBehaviour
             for (int y = 0; y < sizeY; y++)
             {
                 tileIndexesList[x].Add(index);
-                tileObjectList[index].SetActive(true);
+                tileObjectList[index].GetComponent<MeshRenderer>().enabled = true;
                 tileObjectList[index].name = "tile_" + index.ToString();
-                tileObjectList[index].transform.localPosition = new Vector3(x, y, 0);
+                tileObjectList[index].GetComponent<TileComponent>().SetTileTransform(new Vector2Int(x, y), tileScaleUnit);
                 index++;
             }
         }
 
         for(int i=targetTileCount; i< tileObjectList.Count; i++)
         {
-            tileObjectList[i].SetActive(false);
+            tileObjectList[i].GetComponent<MeshRenderer>().enabled = false;
         }
         
     }

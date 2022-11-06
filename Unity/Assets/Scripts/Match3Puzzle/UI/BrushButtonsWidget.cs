@@ -30,7 +30,7 @@ public class BrushButtonsWidget : MonoBehaviour
     {
         if (selectedBrush == null) return false;
 
-        M3TileMapComponent tileMapComponent = PuzzleManager.instance.tileMapComponent;
+        Match3TileMapComponent tileMapComponent = PuzzleManager.instance.tileMapComponent;
         Match3TileComponent oldSelectedTileComponent = PuzzleManager.instance.selectedTileObj.GetComponent<Match3TileComponent>();
         List<GameObject> tileList = tileMapComponent.tileObjectList;
         List<List<int>> tileIndexList = tileMapComponent.tileIndexesList;
@@ -93,10 +93,10 @@ public class BrushButtonsWidget : MonoBehaviour
     {
         if (selectedBrush == null) return false;
 
-        ETileType tileType = ETileType.None;
+        E3MTileType tileType = E3MTileType.None;
         try
         {
-            tileType = (ETileType)System.Convert.ToInt32((selectedBrush.name.Split("_")[1]));
+            tileType = (E3MTileType)System.Convert.ToInt32((selectedBrush.name.Split("_")[1]));
         }
         catch
         {
@@ -112,7 +112,7 @@ public class BrushButtonsWidget : MonoBehaviour
 
     void DrawBrushButtons()
     {
-        List<ETileType> tileTypeList = new List<ETileType>(System.Enum.GetValues(typeof(ETileType)).OfType<ETileType>());
+        List<E3MTileType> tileTypeList = new List<E3MTileType>(System.Enum.GetValues(typeof(E3MTileType)).OfType<E3MTileType>());
         Sprite[] spriteArr = Resources.LoadAll<Sprite>("Sprites/Brushes");
         Vector2 brushSize = new Vector2(40f, 40f);
         Vector2 brushPivot = new Vector2(0.0f, 0.0f);

@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-public class TileManagerGUI : EditorWindow
+public class Match3TileManagerGUI : EditorWindow
 {
     [Min(1)]
     public Vector2Int mapSizeValue = new Vector2Int(1, 1);
@@ -11,7 +11,7 @@ public class TileManagerGUI : EditorWindow
     [MenuItem("Window/TileManagerGUI")]
     static void Init()
     {
-        var example = (TileManagerGUI)TileManagerGUI.GetWindow(typeof(TileManagerGUI));
+        var example = (Match3TileManagerGUI)Match3TileManagerGUI.GetWindow(typeof(Match3TileManagerGUI));
         example.Show();
     }
 
