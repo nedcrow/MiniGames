@@ -29,10 +29,10 @@ public class SLTilemapComponent : TileMapComponent
         }
 
         base.UpdateTileMap(sizeX, sizeY);
-        int loopCount = (int)(tileObjectList.Count * 0.5f);
-        List<Material> tempMaterialList = new List<Material>();
+        int loopCount = (int)(tileObjectList.Count * 0.5f);        
         for (int i=0; i< loopCount; i++)
         {
+            List<Material> tempMaterialList = new List<Material>();
             int randomIndexA = Random.Range(0, useMaterialList.Count);
             tempMaterialList.Add(useMaterialList[randomIndexA]);
             tileObjectList[i].GetComponent<MeshRenderer>().material = useMaterialList[randomIndexA];
@@ -40,6 +40,7 @@ public class SLTilemapComponent : TileMapComponent
 
         for (int i = loopCount; i < tileObjectList.Count; i++)
         {
+            List<Material> tempMaterialList = new List<Material>();
             int randomIndexB = Random.Range(0, tempMaterialList.Count);
             tileObjectList[i].GetComponent<MeshRenderer>().material = tempMaterialList[randomIndexB];
             tempMaterialList.RemoveAt(randomIndexB);

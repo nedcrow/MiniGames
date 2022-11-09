@@ -25,6 +25,7 @@ public class Match3TileComponent : TileComponent
     public void ChangeTileType(E3MTileType tileType)
     {
         currentType = tileType;
+        SetTypeName(tileType.ToString());
 
         if(PuzzleManager.instance.tileMaterials.Length <= (int)currentType)
         {

@@ -25,4 +25,11 @@ public class SLTileComponent : TileComponent
         gameObject.SetActive(false);
         return true;
     }
+
+    public void SetTileTypes(List<ESLTileType> typeList, List<Material> matList)
+    {
+        stackedTypeList = typeList;
+        stackedMaterialList = matList;
+        SetTypeName(stackedTypeList[currentTypeIndex].ToString());
+    }
 }

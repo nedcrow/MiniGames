@@ -6,6 +6,7 @@ public class TileComponent : MonoBehaviour
 {
     public Vector2Int tileLocation = Vector2Int.zero;
     public Vector3 originScale = Vector3.one;
+    string typeName = "";
 
     void Awake()
     {
@@ -22,5 +23,15 @@ public class TileComponent : MonoBehaviour
             );
 
         transform.localScale = originScale * scale;
+    }
+
+    public virtual void SetTypeName(string type)
+    {
+        typeName = type;
+    }
+
+    public virtual string GetTypeName()
+    {
+        return typeName;
     }
 }
