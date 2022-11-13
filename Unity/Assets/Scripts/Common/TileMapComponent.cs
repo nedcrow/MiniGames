@@ -15,6 +15,7 @@ public class TileMapComponent : MonoBehaviour
     [HideInInspector]
     public float tileDistanceUnit = 1;
 
+    [SerializeField]
     public List<GameObject> tileObjectList;
     public List<List<int>> tileIndexesList;
 
@@ -70,7 +71,7 @@ public class TileMapComponent : MonoBehaviour
         foreach (GameObject tileObj in GameObject.FindGameObjectsWithTag("Tile"))
         {
             string parentName = gameObject.name;
-            if(tileObj.transform.parent.name == parentName) tiles.Add(tileObj);
+            if (tileObj.transform.parent.name == parentName) tiles.Add(tileObj);
         }
         return tiles;
     }

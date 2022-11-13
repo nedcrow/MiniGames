@@ -127,7 +127,7 @@ public class BrushButtonsWidget : MonoBehaviour
         {
             GameObject brushButton = new GameObject();
             brushButton.name = "BrushButton_" + type.index.ToString();
-            brushButton.transform.SetParent(UIManager.instance.mainCanvas.transform);
+            brushButton.transform.SetParent(Match3UIManager.instance.mainCanvas.transform);
 
             brushButton.AddComponent<Image>().sprite = spriteArr[0];
             brushButton.AddComponent<Button>().onClick.AddListener(() =>

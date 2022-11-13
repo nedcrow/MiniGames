@@ -1,13 +1,12 @@
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : MonoBehaviour
+public class Match3UIManager : UIManager
 {
     #region instance
-    private static UIManager _instance;
-    public static UIManager instance
+    private static Match3UIManager _instance;
+    public static Match3UIManager instance
     {
         get
         {
@@ -18,9 +17,9 @@ public class UIManager : MonoBehaviour
                     if (obj == null)
                     {
                         obj = new GameObject("Canvas");
-                        obj.AddComponent<UIManager>();
+                        obj.AddComponent<Match3UIManager>();
                     }
-                    return obj.GetComponent<UIManager>();
+                    return obj.GetComponent<Match3UIManager>();
                 }
                 else
                 {
@@ -31,12 +30,10 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-    public GameObject mainCanvas;
     public BrushButtonsWidget brushButtonsWidget;
 
     Match3TileMapComponent tileMapComponent;
-    GameObject editModeButton;
-    GameObject playModeButton;
+
     GameObject saveButton;
     GameObject saveButtonInPanel;
     GameObject exitButton_FileName;
@@ -46,21 +43,15 @@ public class UIManager : MonoBehaviour
     public GameObject fileViewer;
     public GameObject fileNamePanel;
 
-    void Start()
+    protected override void Start()
     {
-        // Set Common Properties
-        mainCanvas = GameObject.Find("Canvas");
+        base.Start();
+
+        // Match3 properties
         tileMapComponent = PuzzleManager.instance.tileMapComponent;
 
         // Brush widget
         brushButtonsWidget = mainCanvas.AddComponent<BrushButtonsWidget>();
-
-        // Mode buttons
-        editModeButton = GameObject.Find("EditModeButton");
-        playModeButton = GameObject.Find("PlayModeButton");
-        editModeButton.GetComponent<Button>().onClick.AddListener(OnClickedEditButton);
-        playModeButton.GetComponent<Button>().onClick.AddListener(OnClickedPlayButton);
-        playModeButton.SetActive(false);
 
         // Save/Load buttons
         saveButton = GameObject.Find("SaveButton");
@@ -82,26 +73,23 @@ public class UIManager : MonoBehaviour
         fileNamePanel.SetActive(false);
 
         SimpleFileBrowser.FileBrowser.SetFilters(true, ".map");
+
+        editModeButton.GetComponent<Button>().onClick.AddListener(OnClickedEditButton);
+        playModeButton.GetComponent<Button>().onClick.AddListener(OnClickedPlayButton);
     }
 
-    void OnClickedEditButton()
+    protected override void OnClickedEditButton()
     {
-        editModeButton.SetActive(false);
-        playModeButton.SetActive(true);
+        base.OnClickedEditButton();
         brushButtonsWidget.ActiveBrushButtons();
-
-        //if (tileMapComponent.tileList.Count() > 0)
-        //{
-        //    tileMapComponent.tileList[0][0].GetComponent<TileComponent>().MoveTo(new Vector2Int(-1, -1));
-        //}
     }
 
-    void OnClickedPlayButton()
+    protected override void OnClickedPlayButton()
     {
-        editModeButton.SetActive(true);
-        playModeButton.SetActive(false);
-        brushButtonsWidget.HideBrushButtons();
+        base.OnClickedPlayButton();
+        brushButtonsWidget.ActiveBrushButtons();
     }
+
 
     void OnClickedSaveButton() {
         // 일시정지 

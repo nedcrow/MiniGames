@@ -42,16 +42,15 @@ public class SLManager : MonoBehaviour
     void Start()
     {
         SpawnCursor();
-
-        UpdateTileMap();        
     }
 
-    void UpdateTileMap()
+    public void UpdateTileMap()
     {
         // Set tilemapCreatorObj & SLTilemapComponent
         tilemapCreatorObj = GameObject.Find("TilemapCreator");
         if (tilemapCreatorObj == null)
         {
+            Debug.LogError("null tilemap comp");
             tilemapCreatorObj = new GameObject("TilemapCreator");
             tilemapCreatorObj.AddComponent<SLTilemapComponent>();
         }
