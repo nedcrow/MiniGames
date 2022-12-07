@@ -80,12 +80,48 @@ public class SLManager : MonoBehaviour
         currentCursorComponent = cursorObj.GetComponent<CursorComponent>();
         currentCursorComponent = currentCursorComponent == null ? cursorObj.AddComponent<CursorComponent>() : currentCursorComponent;
 
-        currentCursorComponent.SelectedTileEvent += (GameObject tileObj) =>
+        currentCursorComponent.SelectedTileEvent +=  (GameObject tileObj) =>
         {
-            selectedTileObj = tileObj;
+            if (selectedTileObj == null)
+            {
+                selectedTileObj = tileObj;
+                return;
+            } 
+
+            if (IsRightTarget(tileObj))
+            {
+                // 점수처리
+            }
+
+            selectedTileObj = null;
+            currentCursorComponent.HideCursor();
+
         };
     }
 
-    // 페어파인더
+    /// <summary>
+    /// Rightly condition is same type and diffrent gameobject.
+    /// </summary>
+    /// <param name="tileObj"></param>
+    /// <returns></returns>
+    bool IsRightTarget(GameObject tileObj)
+    {
+        SLTileComponent oldTileComp = selectedTileObj.GetComponent<SLTileComponent>();
+        SLTileComponent newTileComp = tileObj.GetComponent<SLTileComponent>();
+        bool isNotNull = oldTileComp != null && newTileComp != null;
+
+        if (isNotNull)
+        {            
+            bool isDeffrentLocation = oldTileComp.tileLocation != newTileComp.tileLocation;
+            bool isSameType = oldTileComp.GetTileTypeName() != newTileComp.GetTileTypeName();
+            if(isDeffrentLocation && isSameType)
+            {                
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     // 선택타일 오브젝트는 다른데 타입이 같으면 페어확정
 }

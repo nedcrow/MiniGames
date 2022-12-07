@@ -25,12 +25,12 @@ public class TileComponent : MonoBehaviour
         transform.localScale = originScale * scale;
     }
 
-    public virtual void SetTypeName(string type)
+    public virtual void SetTileTypeName(string type)
     {
         typeName = type;
     }
 
-    public virtual string GetTypeName()
+    public virtual string GetTileTypeName()
     {
         return typeName;
     }

@@ -18,7 +18,7 @@ public class CursorComponent : MonoBehaviour, IPointerClickHandler, IPointerDown
     
     void Start()
     {
-        if (IsDuplicated()) return;
+        if (!IsDuplicated()) return;
 
         Init();
     }
@@ -27,6 +27,17 @@ public class CursorComponent : MonoBehaviour, IPointerClickHandler, IPointerDown
     {
         gameObject.tag = "Cursor";
         transform.position = DefaultPosition;
+        HideCursor();
+    }
+
+    public void HideCursor()
+    {
+        Debug.Log("HideCursor");
+        GetComponent<MeshRenderer>().enabled = false;
+    }
+    public void ActiveCursor()
+    {
+        GetComponent<MeshRenderer>().enabled = true;
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -63,6 +74,7 @@ public class CursorComponent : MonoBehaviour, IPointerClickHandler, IPointerDown
         if (Input.GetMouseButtonUp(0))
         {
             if (canSelect) transform.position = Hit.collider.gameObject.transform.position;
+            ActiveCursor();
             SelectedTileEvent(Hit.collider.gameObject);
             Debug.Log("current selected tile is " + Hit.collider.gameObject.name);
         }

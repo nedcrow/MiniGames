@@ -30,6 +30,6 @@ public class SLTileComponent : TileComponent
     {
         stackedTypeList = typeList;
         stackedMaterialList = matList;
-        SetTypeName(stackedTypeList[currentTypeIndex].ToString());
+        SetTileTypeName(stackedTypeList[currentTypeIndex].ToString());
     }
 }
