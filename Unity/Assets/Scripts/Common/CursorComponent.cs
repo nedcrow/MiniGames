@@ -32,7 +32,6 @@ public class CursorComponent : MonoBehaviour, IPointerClickHandler, IPointerDown
 
     public void HideCursor()
     {
-        Debug.Log("HideCursor");
         GetComponent<MeshRenderer>().enabled = false;
     }
     public void ActiveCursor()

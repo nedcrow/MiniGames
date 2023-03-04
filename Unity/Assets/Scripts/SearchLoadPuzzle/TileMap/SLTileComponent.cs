@@ -4,21 +4,25 @@ using UnityEngine;
 
 public class SLTileComponent : TileComponent
 {
-    [Header("Match3 properties")]
+    [Header("SearchTile properties")]
     [SerializeField]
-    protected List<ESLTileType> stackedTypeList = new List<ESLTileType>();
-    protected List<Material> stackedMaterialList = new List<Material>();
-    protected int currentTypeIndex = 0;
+    //protected List<ESLTileType> stackedTypeList = new List<ESLTileType>();
+    //protected List<Material> stackedMaterialList = new List<Material>();
+    protected List<SLTileType> currentTypeList = new List<SLTileType>();
+    protected int currentHP = 1;
 
     public bool BreakTile()
     {
         // Break effect
 
         // Change tile material
-        currentTypeIndex += 1;
-        if(currentTypeIndex < stackedMaterialList.Count)
+        currentHP -= 1;
+        if(currentHP > 0)
         {
-            gameObject.GetComponent<MeshRenderer>().material = stackedMaterialList[currentTypeIndex];
+            SetCurrenTileType(
+                currentTypeList[currentHP - 1].type,
+                currentTypeList[currentHP - 1].material
+                );
             return false;
         }
 
@@ -26,10 +30,27 @@ public class SLTileComponent : TileComponent
         return true;
     }
 
-    public void SetTileTypes(List<ESLTileType> typeList, List<Material> matList)
+    public void ResetTileTypes(List<SLTileType> typeList)
     {
-        stackedTypeList = typeList;
-        stackedMaterialList = matList;
-        SetTileTypeName(stackedTypeList[currentTypeIndex].ToString());
+        currentTypeList = typeList;
+        currentHP = typeList.Count;
+        SetCurrenTileType(
+            currentTypeList[currentHP - 1].type,
+            currentTypeList[currentHP - 1].material
+            );
+    }
+
+    //public void ResetTileTypes(List<ESLTileType> typeList, List<Material> matList)
+    //{
+    //    stackedTypeList = typeList;
+    //    stackedMaterialList = matList;
+    //    currentHP = typeList.Count;
+    //    SetCurrenTileType(stackedTypeList[currentHP - 1], stackedMaterialList[currentHP - 1]);
+    //}
+
+    public void SetCurrenTileType(ESLTileType type, Material mat)
+    {
+        gameObject.GetComponent<MeshRenderer>().material = mat;
+        SetTileTypeName(type.ToString());
     }
 }

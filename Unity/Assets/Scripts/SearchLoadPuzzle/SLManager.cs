@@ -59,14 +59,13 @@ public class SLManager : MonoBehaviour
         SLTilemapComponent sltilemapComp = tilemapCreatorObj.GetComponent<SLTilemapComponent>();
 
         // update tilemap
-        sltilemapComp.UpdateTileMap(currentTileMapSize.x, currentTileMapSize.y);
+        sltilemapComp.UpdateSLTileMap(currentTileMapSize.x, currentTileMapSize.y);
 
         // camera
         Vector3 basePos = tilemapCreatorObj.transform.position;
-        SLTilemapComponent tilemapComp = tilemapCreatorObj.GetComponent<SLTilemapComponent>();
         Camera.main.transform.position = new Vector3(
-            basePos.x + tilemapComp.currentMapSize.x,
-            basePos.y + tilemapComp.currentMapSize.y,
+            basePos.x + currentTileMapSize.x,
+            basePos.y + currentTileMapSize.y,
             basePos.z - 1
             );
     }
@@ -86,11 +85,13 @@ public class SLManager : MonoBehaviour
             {
                 selectedTileObj = tileObj;
                 return;
-            } 
-
+            }
+            
             if (IsRightTarget(tileObj))
             {
                 // 점수처리
+                selectedTileObj.GetComponent<SLTileComponent>().BreakTile();
+                tileObj.GetComponent<SLTileComponent>().BreakTile();
             }
 
             selectedTileObj = null;
@@ -113,8 +114,9 @@ public class SLManager : MonoBehaviour
         if (isNotNull)
         {            
             bool isDeffrentLocation = oldTileComp.tileLocation != newTileComp.tileLocation;
-            bool isSameType = oldTileComp.GetTileTypeName() != newTileComp.GetTileTypeName();
-            if(isDeffrentLocation && isSameType)
+            bool isSameType = oldTileComp.GetTileTypeName() == newTileComp.GetTileTypeName();
+            //Debug.Log(oldTileComp.GetTileTypeName() + " _ " + newTileComp.GetTileTypeName());
+            if (isDeffrentLocation && isSameType)
             {                
                 return true;
             }

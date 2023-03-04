@@ -22,6 +22,7 @@ public class TileMapComponent : MonoBehaviour
 
     /// <summary>
     /// minimum size is one(1x1)
+    /// set meshes enable and transform
     /// </summary>
     /// <param name="sizeX"> minimum is 1 </param>
     /// <param name="sizeY"> minimum is 1 </param>
