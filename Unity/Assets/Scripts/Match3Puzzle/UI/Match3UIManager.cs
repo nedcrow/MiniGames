@@ -51,7 +51,7 @@ public class Match3UIManager : UIManager
         tileMapComponent = PuzzleManager.instance.tileMapComponent;
 
         // Brush widget
-        brushButtonsWidget = mainCanvas.AddComponent<BrushButtonsWidget>();
+        brushButtonsWidget = mainCanvas.gameObject.AddComponent<BrushButtonsWidget>();
 
         // Save/Load buttons
         saveButton = GameObject.Find("SaveButton");
